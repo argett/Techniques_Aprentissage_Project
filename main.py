@@ -43,23 +43,19 @@ pour améliorer vos résultats? Etc.
 import Dataset as dt
 
 if __name__ == "__main__":
-    arg1 = 0  # utilise sk leanr ? T/F
-
-    path_data = "Data/"
+    arg1 = "Data/"  # utilise sk leanr ? T/F
 
     """
     if len(sys.argv) < 8:
         print("Usage: python main.py sk dataPath\n")
 
         print("\t path: The path to the Data folder")
-
         print(" exemple: python3 main.py ../Data\n")
         return
 
     path_data = str(sys.argv[1])
     """
 
-    dataset = dt.Dataset(path_data)
-    dataset.function()
+    dataset = dt.Dataset(arg1)
 
     print("hello world")
