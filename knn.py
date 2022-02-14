@@ -33,9 +33,7 @@ class knn():
         None.
 
         """
-        t = dataHandler.yTrain()
-        x = dataHandler.xTrain()
-        self.X_learn, self.X_verify, y_learn, y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), train_size=proportion, random_state=0)
+        self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), train_size=proportion, random_state=0)
         
         
         self.nb_neighbour = k
@@ -45,4 +43,4 @@ class knn():
         
     def run(self):
         reseau_knn = KNeighborsClassifier(self.nb_neighbour)
-        reseau_knn.fit()
+        reseau_knn.fit(self.X_learn, self.y_learn)
