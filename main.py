@@ -41,21 +41,27 @@ pour améliorer vos résultats? Etc.
 
 
 import Dataset as dt
+import knn as knn
 
 if __name__ == "__main__":
-    arg1 = "Data/"  # utilise sk leanr ? T/F
+    arg1 = "Data/"  # Path of the data folder
+    arg2 = 'h'  # How much data do we take into account
+    arg3 = 5  # Number of K in KNN algorithm
 
     """
     if len(sys.argv) < 8:
         print("Usage: python main.py sk dataPath\n")
 
         print("\t path: The path to the Data folder")
+        print("\t path: How much data do we take into account : 'h' for hard, 'm' for mixed and 's' for soft and use all data")
+        print("\t path: The number of neighbour in the KNN-calssifyer")
         print(" exemple: python3 main.py ../Data\n")
         return
 
     path_data = str(sys.argv[1])
     """
 
-    dataset = dt.Dataset(arg1)
+    dataset = dt.Dataset(arg1, arg2)
+    knn.knn(dataset, arg3)
 
     print("hello world")
