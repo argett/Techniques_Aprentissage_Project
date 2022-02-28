@@ -41,7 +41,6 @@ pour améliorer vos résultats? Etc.
 
 
 import Dataset as dt
-import knn as knn
 
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
@@ -62,6 +61,5 @@ if __name__ == "__main__":
     """
 
     dataset = dt.Dataset(arg1, arg2)
-    knn.knn(dataset, arg3)
 
     print("hello world")
