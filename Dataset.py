@@ -29,6 +29,8 @@ class Dataset:
         
         # preprocessing
         self.remove_unselected_data(selected_data)
+        self.normalize()
+        print("stop")
         #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
         #self.test = self.handling_missing(self.test, 2, self.test.shape[1])
         
@@ -58,31 +60,35 @@ class Dataset:
         imputer.fit(data)
         data = imputer.transform(data)
         return data
-    
-    def xTrain(self): 
-        X = np.ndarray(shape=[2,self.train.shape[1]]) 
-        X = self.train.loc[:,(self.train.columns != 'id') & (self.train.columns != 'species')] 
-        return X.to_numpy() 
-     
-    def yTrain(self): 
-        t = np.ndarray(shape=[2,self.train.shape[1]]) 
-        t = self.train.loc[:,['id','species']] 
-        return t.to_numpy() 
-    
-    def train_getCaracteristics_id(self, id_):
-        return self.train.loc[self.train["id"] == id_]   #	.tolist()
-    
-    def train_getCaracteristics_row(self, row):
-        return self.train.iloc[row]   #	.tolist()
 
-    def test_getCaracteristics_id(self, id_):
-        return self.test.loc[self.train["id"] == id_]   #	.tolist()
-    
-    def test_getCaracteristics_row(self, row):
-        return self.test.iloc[row]   #	.tolist()
+    def normalize(self):
+        for (tr_columnName, tr_columnData) in self.train.iteritems():
+            if (not tr_columnName == 'id') and (not tr_columnName == 'species'): # TODO : on peux optimiser ?
+                _min = 0
+                _max = 0
+                tr_min = np.min(tr_columnData)
+                tr_max = np.max(tr_columnData)
+                te_min = np.min(self.test.loc[:,tr_columnName])
+                te_max = np.max(self.test.loc[:,tr_columnName])
+                
+                if tr_min < te_min:
+                    _min = tr_min
+                else:
+                    _min = te_min
+                    
+                if tr_max > te_max:
+                    _max = tr_max
+                else:
+                    _max = te_max   
+                
+                for i in range (0,len(tr_columnData)):
+                    self.train.at[i,tr_columnName] = (self.train.at[i,tr_columnName] - _min) / (_max - _min)
+                    
+                    # the test has less values than the train dataset
+                    if i < len(self.test.loc[:,tr_columnName]):
+                        self.test.at[i,tr_columnName] = (self.test.at[i,tr_columnName] - _min) / (_max - _min)
 
-
-    def plotCaracteristicRepartition(self):
+    def plot_caracteristics(self):
         i = 0
         plt.subplots(figsize=(12, 12))
         for (columnName, columnData) in self.train.iteritems():
@@ -131,3 +137,26 @@ class Dataset:
                 self.species.append(spe)
                 
         return self.species.sort()
+    
+    
+    def xTrain(self): 
+        X = np.ndarray(shape=[2,self.train.shape[1]]) 
+        X = self.train.loc[:,(self.train.columns != 'id') & (self.train.columns != 'species')] 
+        return X.to_numpy() 
+     
+    def yTrain(self): 
+        t = np.ndarray(shape=[2,self.train.shape[1]]) 
+        t = self.train.loc[:,['id','species']] 
+        return t.to_numpy() 
+    
+    def train_getCaracteristics_id(self, id_):
+        return self.train.loc[self.train["id"] == id_]   #	.tolist()
+    
+    def train_getCaracteristics_row(self, row):
+        return self.train.iloc[row]   #	.tolist()
+
+    def test_getCaracteristics_id(self, id_):
+        return self.test.loc[self.train["id"] == id_]   #	.tolist()
+    
+    def test_getCaracteristics_row(self, row):
+        return self.test.iloc[row]   #	.tolist()
