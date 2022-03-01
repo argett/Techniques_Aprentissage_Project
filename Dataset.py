@@ -19,7 +19,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder 
 
 class Dataset:
-    def __init__(self, path, selected_data):
+    def __init__(self, path, display, selected_data):
         self.images = []
         self.train = pd.read_csv(str(path + 'train.csv'))
         self.test = pd.read_csv(str(path + 'test.csv'))
@@ -28,8 +28,10 @@ class Dataset:
             self.images.append(mpimg.imread(str("Data/images/" + str(i) + ".jpg")))        
         
         # preprocessing
-        self.remove_unselected_data(selected_data)
-        self.normalize()
+        to_delete = self.plot_caracteristics(display, selected_data)
+        self.feature_selection(to_delete)
+            
+        #self.normalize()
         print("stop")
         #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
         #self.test = self.handling_missing(self.test, 2, self.test.shape[1])
@@ -87,47 +89,76 @@ class Dataset:
                     # the test has less values than the train dataset
                     if i < len(self.test.loc[:,tr_columnName]):
                         self.test.at[i,tr_columnName] = (self.test.at[i,tr_columnName] - _min) / (_max - _min)
-
-    def plot_caracteristics(self):
-        i = 0
-        plt.subplots(figsize=(12, 12))
-        for (columnName, columnData) in self.train.iteritems():
-            if "margin" in columnName:
-                i += 1
-                plt.subplot(8, 8, i) 
-                plt.hist(columnData)
-                plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
-                plt.title(columnName)
-            elif "shape" in columnName:
-                i += 1
-                plt.subplot(8, 8, i) 
-                plt.hist(columnData)
-                plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
-                plt.title(columnName)
-            elif "texture" in columnName:
-                i += 1
-                plt.subplot(8, 8, i) 
-                plt.hist(columnData)
-                plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
-                plt.title(columnName)
             
-            if i == 64:
-                plt.tight_layout()
-                plt.show()
-                plt.subplots(figsize=(12, 12))
-                i = 0
-            
-    def remove_unselected_data(self, user_selection):
-        if user_selection == 's':
-            return
+    def feature_selection(self, to_delete):
+        if not to_delete: # lists are considered as bool if empty
+            pass
         
         # automatically it is mixed or hard so we remove mixed first
-        self.train.drop(columns=['margin16', 'margin23', 'margin52', 'texture15', 'texture21', 'texture36', 'texture56', 'texture60', 'texture61'], axis=1, inplace=True)
-        self.test.drop(columns=['margin16', 'margin23', 'margin52', 'texture15', 'texture21', 'texture36', 'texture56', 'texture60', 'texture61'], axis=1, inplace=True)
+        self.train.drop(columns=to_delete, axis=1, inplace=True)
+        self.test.drop(columns=to_delete, axis=1, inplace=True)
         
-        if user_selection == 'h':
-            self.train.drop(columns=['margin8', 'margin27', 'margin32', 'margin41', 'margin64','texture1', 'texture12', 'texture32', 'texture33', 'texture41', 'texture51'], axis=1, inplace=True)
-            self.test.drop(columns=['margin8', 'margin27', 'margin32', 'margin41', 'margin64','texture1', 'texture12', 'texture32', 'texture33', 'texture41', 'texture51'], axis=1, inplace=True)
+    def plot_caracteristics(self, display, tolerance):
+        to_delete = []
+        if display :
+            i = 0
+            plt.subplots(figsize=(12, 12))
+            for (columnName, columnData) in self.train.iteritems():
+                if "margin" in columnName:
+                    i += 1
+                    plt.subplot(8, 8, i) 
+                    n, _, _ = plt.hist(columnData)
+                    
+                    if (np.max(n) >= np.sum(n) * tolerance):
+                        plt.hist(columnData, color='red')
+                        to_delete.append(columnName)
+                    else:
+                        plt.hist(columnData, color='blue')
+                    
+                    plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
+                    plt.title(columnName)
+                elif "shape" in columnName:
+                    i += 1
+                    plt.subplot(8, 8, i) 
+                    n, _, _ = plt.hist(columnData)
+                    
+                    if (np.max(n) >= np.sum(n) * tolerance):
+                        plt.hist(columnData, color='red')
+                        to_delete.append(columnName)
+                    else:
+                        plt.hist(columnData, color='blue')
+                        
+                    plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
+                    plt.title(columnName)
+                elif "texture" in columnName:
+                    i += 1
+                    plt.subplot(8, 8, i) 
+                    n, _, _ = plt.hist(columnData)
+                    
+                    if (np.max(n) >= np.sum(n) * tolerance):
+                        plt.hist(columnData, color='red')
+                        to_delete.append(columnName)
+                    else:
+                        plt.hist(columnData, color='blue')
+                        
+                    plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
+                    plt.title(columnName)
+                
+                if i == 64:
+                    plt.tight_layout()
+                    plt.show()
+                    plt.subplots(figsize=(12, 12))
+                    i = 0
+        else:
+            for (columnName, columnData) in self.train.iteritems():
+                n, _, _ = plt.hist(columnData)
+                    
+                if (np.max(n) >= np.sum(n) * tolerance):
+                    to_delete.append(columnName)
+        
+        return to_delete
+                        
+            
 
     def get_Species(self):
         self.species = []

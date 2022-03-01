@@ -44,22 +44,24 @@ import Dataset as dt
 
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
-    arg2 = 'h'  # How much data do we take into account
-    arg3 = 5  # Number of K in KNN algorithm
+    arg2 = True # Display caracteristics histograms
+    arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
+    arg4 = 5  # Number of K in KNN algorithm
 
     """
     if len(sys.argv) < 8:
         print("Usage: python main.py sk dataPath\n")
 
         print("\t path: The path to the Data folder")
-        print("\t path: How much data do we take into account : 'h' for hard, 'm' for mixed and 's' for soft and use all data")
-        print("\t path: The number of neighbour in the KNN-calssifyer")
+        print("\t display caracteristics: The path to the Data folder")
+        print("\t feature selection: The maximum % of carecteristics in a 10% range of total caracteristics values [0,1]")
+        print("\t Number of neighbour for KNN: The number of neighbour in the KNN-calssifyer")
         print(" exemple: python3 main.py ../Data\n")
         return
 
     path_data = str(sys.argv[1])
     """
 
-    dataset = dt.Dataset(arg1, arg2)
+    dataset = dt.Dataset(arg1, arg2, arg3)
 
     print("hello world")
