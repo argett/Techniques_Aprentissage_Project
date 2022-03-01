@@ -30,9 +30,8 @@ class Dataset:
         # preprocessing
         to_delete = self.plot_caracteristics(display, selected_data)
         self.feature_selection(to_delete)
-            
-        #self.normalize()
-        print("stop")
+        self.normalize()
+        
         #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
         #self.test = self.handling_missing(self.test, 2, self.test.shape[1])
         
@@ -179,6 +178,11 @@ class Dataset:
         t = np.ndarray(shape=[2,self.train.shape[1]]) 
         t = self.train.loc[:,['species']] 
         return t.to_numpy() 
+    
+    def xTest(self):
+        X = np.ndarray(shape=[2,self.test.shape[1]]) 
+        X = self.train.loc[:,(self.test.columns != 'id')] 
+        return X.to_numpy() 
     
     def train_getCaracteristics_id(self, id_):
         return self.train.loc[self.train["id"] == id_]   #	.tolist()

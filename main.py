@@ -66,5 +66,3 @@ if __name__ == "__main__":
     dataset = dt.Dataset(arg1, arg2, arg3)
     kalgo = knn.knn(dataset, arg4)
     kalgo.run()
-
-    print("hello world")
