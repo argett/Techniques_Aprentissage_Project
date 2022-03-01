@@ -8,7 +8,9 @@ Created on Tue Feb  1 17:44:11 2022
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from matplotlib.ticker import PercentFormatter
 
 # Pour traiter les données manquantes
 from sklearn.impute import SimpleImputer
@@ -17,15 +19,20 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder 
 
 class Dataset:
-    def __init__(self, path):
+    def __init__(self, path, display, selected_data):
         self.images = []
         self.train = pd.read_csv(str(path + 'train.csv'))
         self.test = pd.read_csv(str(path + 'test.csv'))
         
         for i in range(1,1585):
-            self.images.append(mpimg.imread(str("Data/images/" + str(i) + ".jpg")))
+            self.images.append(mpimg.imread(str("Data/images/" + str(i) + ".jpg")))        
         
         # preprocessing
+        to_delete = self.plot_caracteristics(display, selected_data)
+        self.feature_selection(to_delete)
+            
+        #self.normalize()
+        print("stop")
         #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
         #self.test = self.handling_missing(self.test, 2, self.test.shape[1])
         
@@ -55,6 +62,113 @@ class Dataset:
         imputer.fit(data)
         data = imputer.transform(data)
         return data
+
+    def normalize(self):
+        for (tr_columnName, tr_columnData) in self.train.iteritems():
+            if (not tr_columnName == 'id') and (not tr_columnName == 'species'): # TODO : on peux optimiser ?
+                _min = 0
+                _max = 0
+                tr_min = np.min(tr_columnData)
+                tr_max = np.max(tr_columnData)
+                te_min = np.min(self.test.loc[:,tr_columnName])
+                te_max = np.max(self.test.loc[:,tr_columnName])
+                
+                if tr_min < te_min:
+                    _min = tr_min
+                else:
+                    _min = te_min
+                    
+                if tr_max > te_max:
+                    _max = tr_max
+                else:
+                    _max = te_max   
+                
+                for i in range (0,len(tr_columnData)):
+                    self.train.at[i,tr_columnName] = (self.train.at[i,tr_columnName] - _min) / (_max - _min)
+                    
+                    # the test has less values than the train dataset
+                    if i < len(self.test.loc[:,tr_columnName]):
+                        self.test.at[i,tr_columnName] = (self.test.at[i,tr_columnName] - _min) / (_max - _min)
+            
+    def feature_selection(self, to_delete):
+        if not to_delete: # lists are considered as bool if empty
+            pass
+        
+        # automatically it is mixed or hard so we remove mixed first
+        self.train.drop(columns=to_delete, axis=1, inplace=True)
+        self.test.drop(columns=to_delete, axis=1, inplace=True)
+        
+    def plot_caracteristics(self, display, tolerance):
+        to_delete = []
+        if display :
+            i = 0
+            plt.subplots(figsize=(12, 12))
+            for (columnName, columnData) in self.train.iteritems():
+                if "margin" in columnName:
+                    i += 1
+                    plt.subplot(8, 8, i) 
+                    n, _, _ = plt.hist(columnData)
+                    
+                    if (np.max(n) >= np.sum(n) * tolerance):
+                        plt.hist(columnData, color='red')
+                        to_delete.append(columnName)
+                    else:
+                        plt.hist(columnData, color='blue')
+                    
+                    plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
+                    plt.title(columnName)
+                elif "shape" in columnName:
+                    i += 1
+                    plt.subplot(8, 8, i) 
+                    n, _, _ = plt.hist(columnData)
+                    
+                    if (np.max(n) >= np.sum(n) * tolerance):
+                        plt.hist(columnData, color='red')
+                        to_delete.append(columnName)
+                    else:
+                        plt.hist(columnData, color='blue')
+                        
+                    plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
+                    plt.title(columnName)
+                elif "texture" in columnName:
+                    i += 1
+                    plt.subplot(8, 8, i) 
+                    n, _, _ = plt.hist(columnData)
+                    
+                    if (np.max(n) >= np.sum(n) * tolerance):
+                        plt.hist(columnData, color='red')
+                        to_delete.append(columnName)
+                    else:
+                        plt.hist(columnData, color='blue')
+                        
+                    plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
+                    plt.title(columnName)
+                
+                if i == 64:
+                    plt.tight_layout()
+                    plt.show()
+                    plt.subplots(figsize=(12, 12))
+                    i = 0
+        else:
+            for (columnName, columnData) in self.train.iteritems():
+                n, _, _ = plt.hist(columnData)
+                    
+                if (np.max(n) >= np.sum(n) * tolerance):
+                    to_delete.append(columnName)
+        
+        return to_delete
+                        
+            
+
+    def get_Species(self):
+        self.species = []
+        
+        for spe in self.train['species'] :
+            if not spe in self.species:
+                self.species.append(spe)
+                
+        return self.species.sort()
+    
     
     def xTrain(self): 
         X = np.ndarray(shape=[2,self.train.shape[1]]) 
