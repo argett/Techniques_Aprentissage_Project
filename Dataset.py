@@ -177,7 +177,7 @@ class Dataset:
      
     def yTrain(self): 
         t = np.ndarray(shape=[2,self.train.shape[1]]) 
-        t = self.train.loc[:,['id','species']] 
+        t = self.train.loc[:,['species']] 
         return t.to_numpy() 
     
     def train_getCaracteristics_id(self, id_):
