@@ -43,4 +43,5 @@ class knn():
         
     def run(self):
         reseau_knn = KNeighborsClassifier(self.nb_neighbour)
-        reseau_knn.fit(self.X_learn, self.y_learn)
+        reseau_knn.fit(self.X_learn, self.y_learn.ravel())
+        print(reseau_knn.score(self.X_verify, self.y_verify))
