@@ -31,8 +31,7 @@ class Dataset:
         to_delete = self.plot_caracteristics(display, selected_data)
         self.feature_selection(to_delete)
             
-        #self.normalize()
-        print("stop")
+        self.normalize()
         #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
         #self.test = self.handling_missing(self.test, 2, self.test.shape[1])
         

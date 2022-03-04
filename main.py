@@ -41,6 +41,7 @@ pour améliorer vos résultats? Etc.
 
 
 import Dataset as dt
+import random_forest as rForest
 
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
@@ -63,5 +64,7 @@ if __name__ == "__main__":
     """
 
     dataset = dt.Dataset(arg1, arg2, arg3)
+    ia = rForest.randomForest(dataset, 200)
+    ia.run()
 
     print("hello world")
