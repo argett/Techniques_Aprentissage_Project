@@ -13,7 +13,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 
 class knn():
-    def __init__(self, dataHandler, k, proportion=0.2 ,manhattan=False):
+    def __init__(self, dataHandler, k, proportion=0.8 ,manhattan=False):
         """
         Create an instance of the class
 
@@ -37,8 +37,8 @@ class knn():
         
         
         self.nb_neighbour = k
-        self.accuracy = 0
-        self.distance = 0 # euclidian distance
+        #self.accuracy = 0
+        #self.distance = 0 # euclidian distance
         self.distance_method = manhattan # euclidean distance by default
         
     def run(self):

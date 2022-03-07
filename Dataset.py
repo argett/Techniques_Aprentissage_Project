@@ -67,6 +67,7 @@ class Dataset:
             if (not tr_columnName == 'id') and (not tr_columnName == 'species'): # TODO : on peux optimiser ?
                 self.center_reduce(tr_columnName, tr_columnData)
                 self.normalize(tr_columnName, tr_columnData)
+                self.troncate(tr_columnName)
 
     def normalize(self, colName, colData):
         _min = 0
@@ -105,7 +106,11 @@ class Dataset:
             if i < len(self.test.loc[:,colName]):
                 self.test.at[i,colName] = (self.test.at[i,colName] - mean) / std
         
-
+    def troncate(self, colName):     
+        self.test[colName] = self.test[colName].round(5)
+        self.train[colName] = self.train[colName].round(5)
+        
+        
     def feature_selection(self, to_delete):
         if not to_delete: # lists are considered as bool if empty
             pass
