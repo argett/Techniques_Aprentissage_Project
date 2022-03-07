@@ -45,7 +45,7 @@ import knn as knn
 
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
-    arg2 = False # Display caracteristics histograms
+    arg2 = True # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
     arg4 = 5  # Number of K in KNN algorithm
 
