@@ -41,12 +41,13 @@ pour améliorer vos résultats? Etc.
 
 
 import Dataset as dt
+import knn as knn
 
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
-    arg2 = False # Display caracteristics histograms
+    arg2 = True # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
-    arg4 = 5  # Number of K in KNN algorithm
+    arg4 = 8  # Number of K in KNN algorithm
 
     """
     if len(sys.argv) < 8:
@@ -54,7 +55,7 @@ if __name__ == "__main__":
 
         print("\t path: The path to the Data folder")
         print("\t display caracteristics: The path to the Data folder")
-        print("\t feature selection: The maximum % of carecteristics in a 10% range of total caracteristics values [0,1]")
+        print("\t feature selection: The maximum % of carecteristics in a 10% range of total caracteristics values [0.3,1]")
         print("\t Number of neighbour for KNN: The number of neighbour in the KNN-calssifyer")
         print(" exemple: python3 main.py ../Data\n")
         return
@@ -63,5 +64,5 @@ if __name__ == "__main__":
     """
 
     dataset = dt.Dataset(arg1, arg2, arg3)
-
-    print("hello world")
+    kalgo = knn.knn(dataset, arg4)
+    kalgo.run()
