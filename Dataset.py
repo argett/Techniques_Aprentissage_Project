@@ -19,7 +19,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder 
 
 class Dataset:
-    def __init__(self, path, display, selected_data):
+    def __init__(self, path, display, selected_data=0.85):
         self.images = []
         self.train = pd.read_csv(str(path + 'train.csv'))
         self.test = pd.read_csv(str(path + 'test.csv'))
@@ -28,10 +28,10 @@ class Dataset:
             self.images.append(mpimg.imread(str("Data/images/" + str(i) + ".jpg")))        
         
         # preprocessing
+        self.preprocess()
         to_delete = self.plot_caracteristics(display, selected_data)
         self.feature_selection(to_delete)
-            
-        self.normalize()
+        
         #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
         #self.test = self.handling_missing(self.test, 2, self.test.shape[1])
         
@@ -62,33 +62,55 @@ class Dataset:
         data = imputer.transform(data)
         return data
 
-    def normalize(self):
+    def preprocess(self):
         for (tr_columnName, tr_columnData) in self.train.iteritems():
             if (not tr_columnName == 'id') and (not tr_columnName == 'species'): # TODO : on peux optimiser ?
-                _min = 0
-                _max = 0
-                tr_min = np.min(tr_columnData)
-                tr_max = np.max(tr_columnData)
-                te_min = np.min(self.test.loc[:,tr_columnName])
-                te_max = np.max(self.test.loc[:,tr_columnName])
-                
-                if tr_min < te_min:
-                    _min = tr_min
-                else:
-                    _min = te_min
-                    
-                if tr_max > te_max:
-                    _max = tr_max
-                else:
-                    _max = te_max   
-                
-                for i in range (0,len(tr_columnData)):
-                    self.train.at[i,tr_columnName] = (self.train.at[i,tr_columnName] - _min) / (_max - _min)
-                    
-                    # the test has less values than the train dataset
-                    if i < len(self.test.loc[:,tr_columnName]):
-                        self.test.at[i,tr_columnName] = (self.test.at[i,tr_columnName] - _min) / (_max - _min)
+                self.center_reduce(tr_columnName, tr_columnData)
+                self.normalize(tr_columnName, tr_columnData)
+                self.troncate(tr_columnName)
+
+    def normalize(self, colName, colData):
+        _min = 0
+        _max = 0
+        
+        tr_min = np.min(colData)
+        tr_max = np.max(colData)
+        te_min = np.min(self.test.loc[:,colName])
+        te_max = np.max(self.test.loc[:,colName])
+        
+        if tr_min < te_min:
+            _min = tr_min
+        else:
+            _min = te_min
             
+        if tr_max > te_max:
+            _max = tr_max
+        else:
+            _max = te_max   
+        
+        for i in range (0,len(colData)):
+            self.train.at[i,colName] = (self.train.at[i,colName] - _min) / (_max - _min)
+            
+            # the test has less values than the train dataset
+            if i < len(self.test.loc[:,colName]):
+                self.test.at[i,colName] = (self.test.at[i,colName] - _min) / (_max - _min)
+                
+    def center_reduce(self, colName, colData):
+        mean = np.mean(colData)
+        std = np.std(colData)
+        
+        for i in range (0,len(colData)):
+            self.train.at[i,colName] = (self.train.at[i,colName] - mean) / std
+            
+            # the test has less values than the train dataset
+            if i < len(self.test.loc[:,colName]):
+                self.test.at[i,colName] = (self.test.at[i,colName] - mean) / std
+        
+    def troncate(self, colName):     
+        self.test[colName] = self.test[colName].round(5)
+        self.train[colName] = self.train[colName].round(5)
+        
+        
     def feature_selection(self, to_delete):
         if not to_delete: # lists are considered as bool if empty
             pass
@@ -178,6 +200,11 @@ class Dataset:
         t = np.ndarray(shape=[2,self.train.shape[1]]) 
         t = self.train.loc[:,['species']] 
         return t.to_numpy() 
+    
+    def xTest(self):
+        X = np.ndarray(shape=[2,self.test.shape[1]]) 
+        X = self.train.loc[:,(self.test.columns != 'id')] 
+        return X.to_numpy() 
     
     def train_getCaracteristics_id(self, id_):
         return self.train.loc[self.train["id"] == id_]   #	.tolist()
