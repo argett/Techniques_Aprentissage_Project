@@ -13,7 +13,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 
 class knn():
-    def __init__(self, dataHandler, k, proportion=0.8 ,manhattan=False):
+    def __init__(self, dataHandler, k=8, proportion=0.8 ,manhattan=False):
         """
         Create an instance of the class
 

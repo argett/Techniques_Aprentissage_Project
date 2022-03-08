@@ -19,7 +19,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder 
 
 class Dataset:
-    def __init__(self, path, display, selected_data):
+    def __init__(self, path, display, selected_data=0.85):
         self.images = []
         self.train = pd.read_csv(str(path + 'train.csv'))
         self.test = pd.read_csv(str(path + 'test.csv'))
