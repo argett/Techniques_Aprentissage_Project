@@ -48,6 +48,13 @@ if __name__ == "__main__":
     arg2 = True # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
     arg4 = 8  # Number of K in KNN algorithm
+    
+    # random forest parameters
+    arg5 = 200 # Number of threes in the random forest
+    arg6 = 50 # maximum depth of the tress
+    arg7 = 2 # Number of minimum samples to create a new node
+    arg8 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
+    arg9 = 2 #The number of features to consider when looking for the best split
 
     """
     if len(sys.argv) < 8:
@@ -62,7 +69,6 @@ if __name__ == "__main__":
 
     path_data = str(sys.argv[1])
     """
-
     dataset = dt.Dataset(arg1, arg2, arg3)
-    ia = rForest.randomForest(dataset, 200)
+    ia = rForest.randomForest(dataset, arg5, arg6, arg7, arg8 ,arg9)
     ia.run()
