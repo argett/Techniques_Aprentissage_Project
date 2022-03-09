@@ -13,7 +13,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class randomForest():
-    def __init__(self, dataHandler, nb_trees, criterion="gini", max_features=None, random_state=5, proportion=0.2):
+    def __init__(self, dataHandler, nb_trees=200, max_depth=50, min_sample=2, random_state=50, max_features=1, criterion="gini", proportion=0.8):
         """
         Create an instance of the class
 
@@ -41,9 +41,11 @@ class randomForest():
         self.trees = nb_trees
         self.criterion = criterion
         self.max_features = max_features
+        self.max_depth = max_depth
         self.rdm_state = random_state
+        self.min_sample = min_sample
         
     def run(self):
-        random_forest = RandomForestClassifier(n_estimators=self.trees, criterion=self.criterion, max_features=self.max_features)
+        random_forest = RandomForestClassifier(n_estimators=self.trees, max_depth=self.max_depth, min_samples_split=self.min_sample,criterion=self.criterion, max_features=self.max_features)
         random_forest.fit(self.X_learn, self.y_learn.ravel())
-        print(random_forest.score(self.X_verify, self.y_verify))
+        print(random_forest.oob_score(self.X_verify, self.y_verify))
