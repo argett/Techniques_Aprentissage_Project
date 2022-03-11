@@ -71,4 +71,6 @@ if __name__ == "__main__":
     """
     dataset = dt.Dataset(arg1, arg2, arg3)
     ia = rForest.randomForest(dataset, arg5, arg6, arg7, arg8 ,arg9)
+    # TODO : ia.recherche_hyperparametres(num_fold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
+    ia.entrainement()
     ia.run()
