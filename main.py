@@ -65,28 +65,28 @@ if __name__ == "__main__":
 
     path_data = str(sys.argv[1])
     """
+    
     res = []
-    lr = []
+    lrate = []
     est = []
-    sam = []
-
+    sample = 2
     dataset = dt.Dataset(arg1, arg2, arg3)
-    for lr in tqdm([0.001,0.01,0.1]):
-        for estimator in [10,100,500]:
-            for sample in [2,10]:
-                print("\nLr = " + str(lr) + ", estimator = " + str(estimator) + ", sample = " + str(sample))
-                grad = gradient.gradientBoosting(dataset, lr, estimator, sample)
-                
-                lr.add(lr)
-                est.add(estimator)
-                sam.add(sample)
-                res.add(grad.run())
+    for lr in tqdm([0.1,0.25,0.5,0.75,1]):
+        for estimator in [400,500,600,800]:
+            grad = gradient.gradientBoosting(dataset, lr, estimator, sample)
+            
+            lrate.append(lr)
+            est.append(estimator)
+            res.append(grad.run())
                 
                 
     plt.plot(res)
+    plt.title("Resultats, sample = 2")
     plt.show()
     
-    plt.plot(lr, label="lr")
+    plt.plot(lrate, label="lrate")
+    plt.title("learring rate")
+    plt.show()
     plt.plot(est, label="estimator")
-    plt.plot(sam, label="sample")
+    plt.title("estimator")
     plt.show()

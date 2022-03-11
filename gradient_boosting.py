@@ -41,4 +41,4 @@ class gradientBoosting():
     def run(self):
         grad_boosting = GradientBoostingClassifier(learning_rate=self.learning_rate, n_estimators=self.estimators, min_samples_split=self.min_sample)
         grad_boosting.fit(self.X_learn, self.y_learn.ravel())
-        print(grad_boosting.score(self.X_verify, self.y_verify))
+        return grad_boosting.score(self.X_verify, self.y_verify)
