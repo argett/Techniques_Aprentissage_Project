@@ -8,6 +8,7 @@ Created on Thu Mar  3 19:48:20 2022
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
@@ -53,7 +54,7 @@ class randomForest():
         self.min_sample = min_sample
     
     def recherche_hyperparametres(self, num_fold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion):
-        meilleur_err = np.inf()
+        meilleur_err = np.inf
         meilleur_tree = None
         meilleur_depth = None
         meilleur_state = None
@@ -61,7 +62,7 @@ class randomForest():
         meilleur_sample = None
         meilleur_criterion = None
         
-        for tree in nb_trees:  # On teste plusieurs degrés du polynôme
+        for tree in tqdm(nb_trees):  # On teste plusieurs degrés du polynôme
             for depth in maxDepth:
                 for state in random_state:
                     for feature in max_features:
@@ -89,7 +90,7 @@ class randomForest():
                                     meilleur_feature = feature
                                     meilleur_sample = sample
                                     meilleur_criterion = crit
-      
+                                    
         self.trees = meilleur_tree
         self.max_features = meilleur_feature
         self.max_depth = meilleur_depth
@@ -97,10 +98,18 @@ class randomForest():
         self.min_sample = meilleur_sample
         self.criterion = meilleur_criterion  
         
+        print("trees = " + str(meilleur_tree))
+        print("max_features = " + str(meilleur_feature))
+        print("meilleur_depth = " + str(meilleur_depth))
+        print("meilleur_state = " + str(meilleur_state))
+        print("meilleur_sample = " + str(meilleur_sample))
+        print("meilleur_criterion = " + str(meilleur_criterion))
+        
     def entrainement(self):
         self.randomForest = RandomForestClassifier(n_estimators=self.trees, max_depth=self.max_depth, min_samples_split=self.min_sample,criterion=self.criterion, max_features=self.max_features)
         # TODO : retourner le score ?
-        self.randomForest.fit(self.dh.xTrain(), self.dh.yTrain()) # on utilise toutes les données d'entrainement
+        self.randomForest.fit(self.X_learn, self.y_learn.ravel()) # on utilise toutes les données d'entrainement
+        return self.randomForest.score(self.X_verify, self.y_verify)
     
     def run(self):
         print(self.randomForest.predict(self.dh.xTest()))
