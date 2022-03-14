@@ -39,12 +39,9 @@ uniquement utilisé les données brutes ou avez-vous essayé de les réorganiser
 pour améliorer vos résultats? Etc.
 """
 
-
-import matplotlib.pyplot as plt
 import Dataset as dt
 import knn as knn
-import gradient_boosting as gradient
-from tqdm import tqdm
+import gradient_boosting as gradientB
 
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
@@ -52,6 +49,9 @@ if __name__ == "__main__":
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
     arg4 = 8  # Number of K in KNN algorithm
 
+    arg10 = 0.5
+    arg11 = 100
+    arg12 = 2
     """
     if len(sys.argv) < 8:
         print("Usage: python main.py sk dataPath\n")
@@ -66,27 +66,15 @@ if __name__ == "__main__":
     path_data = str(sys.argv[1])
     """
     
-    res = []
-    lrate = []
-    est = []
-    sample = 2
-    dataset = dt.Dataset(arg1, arg2, arg3)
-    for lr in tqdm([0.1,0.25,0.5,0.75,1]):
-        for estimator in [400,500,600,800]:
-            grad = gradient.gradientBoosting(dataset, lr, estimator, sample)
-            
-            lrate.append(lr)
-            est.append(estimator)
-            res.append(grad.run())
-                
-                
-    plt.plot(res)
-    plt.title("Resultats, sample = 2")
-    plt.show()
+    sample = [2]
+    kFold = 2
+    lr = [0.5]#[0.1,0.25,0.5,0.75,1]
+    estimator = [100]#[400,500,600,800]
     
-    plt.plot(lrate, label="lrate")
-    plt.title("learring rate")
-    plt.show()
-    plt.plot(est, label="estimator")
-    plt.title("estimator")
-    plt.show()
+    dataset = dt.Dataset(arg1, arg2, arg3)
+    
+    gd = gradientB.gradientBoosting(dataset, arg10, arg11, arg12) 
+    gd.recherche_hyperparametres(kFold, lr, estimator, sample) 
+    print(gd.entrainement()) 
+    gd.run()
+    
