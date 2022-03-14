@@ -14,7 +14,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class randomForest():
-    def __init__(self, dataHandler, nb_trees=200, max_depth=50, min_sample=2, random_state=50, max_features=1, criterion="gini", proportion=0.2):
+    def __init__(self, dataHandler, nb_trees=50, max_depth=100, min_sample=2, random_state=10, max_features=1, criterion="gini", proportion=0.2):
         """
         Create an instance of the class
 
@@ -38,10 +38,7 @@ class randomForest():
         """
         self.randomForest = None
         
-        self.X_learn  = None
-        self.X_verify = None
-        self.y_learn  = None
-        self.y_verify = None
+        self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), train_size=proportion, random_state=0) 
         
         self.dh = dataHandler
         self.proportion = proportion
@@ -60,50 +57,45 @@ class randomForest():
         meilleur_state = None
         meilleur_feature = None
         meilleur_sample = None
-        meilleur_criterion = None
         
         for tree in tqdm(nb_trees):  # On teste plusieurs degrés du polynôme
             for depth in maxDepth:
                 for state in random_state:
                     for feature in max_features:
                         for sample in min_sample:
-                            for crit in criterion:
-                                sum_error = 0
+                            sum_error = 0
+                            
+                            self.trees = tree
+                            self.max_features = feature
+                            self.max_depth = depth
+                            self.rdm_state = state
+                            self.min_sample = sample
+                            self.criterion = criterion
+                
+                            for k in range(num_fold):  # K-fold validation
+                                self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
+                                sum_error += self.entrainement()                                    
                                 
-                                self.trees = tree
-                                self.max_features = feature
-                                self.max_depth = depth
-                                self.rdm_state = state
-                                self.min_sample = sample
-                                self.criterion = criterion
-                    
-                                for k in range(num_fold):  # K-fold validation
-                                    self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
-                                    sum_error += self.entrainement()                                    
-                                    
-                                avg_err_locale = sum_error/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
-                                if(avg_err_locale < meilleur_err):
-                                    meilleur_err = avg_err_locale
-                                    meilleur_tree = tree
-                                    meilleur_depth = depth
-                                    meilleur_state = state
-                                    meilleur_feature = feature
-                                    meilleur_sample = sample
-                                    meilleur_criterion = crit
+                            avg_err_locale = sum_error/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
+                            if(avg_err_locale < meilleur_err):
+                                meilleur_err = avg_err_locale
+                                meilleur_tree = tree
+                                meilleur_depth = depth
+                                meilleur_state = state
+                                meilleur_feature = feature
+                                meilleur_sample = sample
                                     
         self.trees = meilleur_tree
         self.max_features = meilleur_feature
         self.max_depth = meilleur_depth
         self.rdm_state = meilleur_state
         self.min_sample = meilleur_sample
-        self.criterion = meilleur_criterion  
         
         print("trees = " + str(meilleur_tree))
         print("max_features = " + str(meilleur_feature))
         print("meilleur_depth = " + str(meilleur_depth))
         print("meilleur_state = " + str(meilleur_state))
         print("meilleur_sample = " + str(meilleur_sample))
-        print("meilleur_criterion = " + str(meilleur_criterion))
         
     def entrainement(self):
         self.randomForest = RandomForestClassifier(n_estimators=self.trees, max_depth=self.max_depth, min_samples_split=self.min_sample,criterion=self.criterion, max_features=self.max_features)

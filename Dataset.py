@@ -203,7 +203,7 @@ class Dataset:
     
     def xTest(self):
         X = np.ndarray(shape=[2,self.test.shape[1]]) 
-        X = self.train.loc[:,(self.test.columns != 'id')] 
+        X = self.test.loc[:,(self.test.columns != 'id')] 
         return X.to_numpy() 
     
     def train_getCaracteristics_id(self, id_):
