@@ -13,7 +13,7 @@ from sklearn.neighbors import KNeighborsClassifier
  
  
 class knn():
-    def __init__(self, dataHandler, k=8, leaf_size=64, proportion=0.2 ,manhattan=False):
+    def __init__(self, dataHandler, k=3, leaf_size=2, proportion=0.2 ,manhattan=False):
         """ 
         Create an instance of the class 
  
@@ -89,14 +89,14 @@ class knn():
                 liste_leaf.append(ls) 
                     
                 if(avg_res_locale > meilleur_res): 
-                    sum_reponse = avg_res_locale 
+                    meilleur_res = avg_res_locale 
                     meilleur_k = k
                     meilleur_leaf = ls
                 
         self.nb_neighbour = meilleur_k
         self.leaf_size = meilleur_leaf
          
-        plt.plot(meilleur_res) 
+        plt.plot(liste_res) 
         plt.title("KNN : Bonne réponse moyenne sur les K-fold validations") 
         plt.show() 
         plt.plot(liste_k) 

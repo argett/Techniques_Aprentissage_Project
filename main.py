@@ -65,7 +65,7 @@ if __name__ == "__main__":
     path_data = str(sys.argv[1])
     """
     kFold = 3 
-    ks = [3,5,8,10,15,20,30] 
+    ks = [3,5,8,10,15,20,30,50,100] 
     ls = [2,5,10,25,64,99] 
     
     dataset = dt.Dataset(arg1, arg2, arg3)
