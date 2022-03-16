@@ -39,9 +39,10 @@ uniquement utilisé les données brutes ou avez-vous essayé de les réorganiser
 pour améliorer vos résultats? Etc.
 """
 
-
 import Dataset as dt
 import random_forest as rForest
+import knn as knn
+import gradient_boosting as gradientB
 
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
@@ -58,6 +59,9 @@ if __name__ == "__main__":
     arg8 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
     arg9 = 2 #The number of features to consider when looking for the best split
 
+    arg10 = 0.5
+    arg11 = 100
+    arg12 = 2
     """
     if len(sys.argv) < 8:
         print("Usage: python main.py sk dataPath\n")
@@ -75,6 +79,12 @@ if __name__ == "__main__":
     ks = [3,5,8,10,15,20,30,50,100] 
     ls = [2,5,10,25,64,99] 
     
+    
+    kFold = 2
+    lr = [0.1,0.5,0.75,1]
+    estimator = [300,500,800]
+    sample = [2]
+    
     dataset = dt.Dataset(arg1, arg2, arg3)
     
     kalgo = knn.knn(dataset, arg4)
@@ -86,3 +96,9 @@ if __name__ == "__main__":
     ia.recherche_hyperparametres(2, [50,200,500], [32,50,64,100], [10,50,100], [1,64,128], [2], "gini")
     print(ia.entrainement())
     ia.run()
+    
+    gd = gradientB.gradientBoosting(dataset, arg10, arg11, arg12) 
+    gd.recherche_hyperparametres(kFold, lr, estimator, sample) 
+    print(gd.entrainement()) 
+    gd.run()
+    
