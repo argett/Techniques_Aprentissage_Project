@@ -49,19 +49,22 @@ if __name__ == "__main__":
     arg2 = True # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
     
+    # KNN
     arg4 = 8  # Number of K in KNN algorithm
-    arg45 = 64 # Number of leaf size
+    arg5 = 64 # Number of leaf size
     
     # random forest parameters
-    arg5 = 200 # Number of threes in the random forest
-    arg6 = 50 # maximum depth of the tress
-    arg7 = 2 # Number of minimum samples to create a new node
-    arg8 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
-    arg9 = 2 #The number of features to consider when looking for the best split
+    arg6 = 200 # Number of threes in the random forest
+    arg7 = 50 # maximum depth of the tress
+    arg8 = 2 # Number of minimum samples to create a new node
+    arg9 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
+    arg10 = 2 #The number of features to consider when looking for the best split
 
-    arg10 = 0.5
-    arg11 = 100
-    arg12 = 2
+    # Gradient Boosting
+    arg11 = 0.5
+    arg12 = 100
+    arg13 = 2
+    
     """
     if len(sys.argv) < 8:
         print("Usage: python main.py sk dataPath\n")
@@ -75,29 +78,39 @@ if __name__ == "__main__":
 
     path_data = str(sys.argv[1])
     """
-    kFold = 3 
+    dataset = dt.Dataset(arg1, arg2, arg3)    
+    kFold = 2
+    
+    # KNN
     ks = [3,5,8,10,15,20,30,50,100] 
     ls = [2,5,10,25,64,99] 
     
+    kalgo = knn.knn(dataset, arg4, arg5)
+    kalgo.recherche_hyperparametres(kFold, ks, ls)  
+    print(kalgo.entrainement())  
+    kalgo.run() 
     
-    kFold = 2
+    
+    # Random Forest
+    nb_trees = [50,200,500]
+    maxDepth = [32,50,64,100]
+    random_state = [10,50,100]
+    max_features = [1,64,128]
+    min_sample = [2]
+    criterion = "gini"
+    
+    ia = rForest.randomForest(dataset, arg6, arg7, arg8, arg9, arg10)
+    ia.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
+    print(ia.entrainement())
+    ia.run()
+    
+    
+    # Gradient Boosting
     lr = [0.1,0.5,0.75,1]
     estimator = [300,500,800]
     sample = [2]
     
-    dataset = dt.Dataset(arg1, arg2, arg3)
-    
-    kalgo = knn.knn(dataset, arg4)
-    kalgo.recherche_hyperparametres(kFold, ks, ls)  
-    print(kalgo.entrainement())  
-    kalgo.run() 
-    ia = rForest.randomForest(dataset, arg5, arg6, arg7, arg8 ,arg9)
-    # TODO : ia.recherche_hyperparametres(num_fold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
-    ia.recherche_hyperparametres(2, [50,200,500], [32,50,64,100], [10,50,100], [1,64,128], [2], "gini")
-    print(ia.entrainement())
-    ia.run()
-    
-    gd = gradientB.gradientBoosting(dataset, arg10, arg11, arg12) 
+    gd = gradientB.gradientBoosting(dataset, arg11, arg12, arg13) 
     gd.recherche_hyperparametres(kFold, lr, estimator, sample) 
     print(gd.entrainement()) 
     gd.run()
