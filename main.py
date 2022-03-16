@@ -66,10 +66,10 @@ if __name__ == "__main__":
     path_data = str(sys.argv[1])
     """
     
-    sample = [2]
     kFold = 2
-    lr = [0.5]#[0.1,0.25,0.5,0.75,1]
-    estimator = [100]#[400,500,600,800]
+    lr = [0.1,0.5,0.75,1]
+    estimator = [300,500,800]
+    sample = [2]
     
     dataset = dt.Dataset(arg1, arg2, arg3)
     
