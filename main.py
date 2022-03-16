@@ -47,7 +47,9 @@ if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
     arg2 = True # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
+    
     arg4 = 8  # Number of K in KNN algorithm
+    arg45 = 64 # Number of leaf size
 
     """
     if len(sys.argv) < 8:
@@ -62,7 +64,13 @@ if __name__ == "__main__":
 
     path_data = str(sys.argv[1])
     """
-
+    kFold = 3 
+    ks = [3,5,8,10,15,20,30] 
+    ls = [2,5,10,25,64,99] 
+    
     dataset = dt.Dataset(arg1, arg2, arg3)
+    
     kalgo = knn.knn(dataset, arg4)
-    kalgo.run()
+    kalgo.recherche_hyperparametres(kFold, ks, ls)  
+    print(kalgo.entrainement())  
+    kalgo.run() 
