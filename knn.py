@@ -36,6 +36,8 @@ class knn():
  
         """ 
         self.nn = None
+        self.dh = dataHandler
+        self.proportion = proportion
         
         self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), train_size=proportion, random_state=0) 
          
@@ -76,8 +78,8 @@ class knn():
                 self.nb_neighbour = k
                 self.leaf_size = ls
      
-                for k in range(num_fold):  # K-fold validation 
-                    self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True) 
+                for ki in range(num_fold):  # K-fold validation 
+                    self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=ki, shuffle=True) 
                     sum_reponse += self.entrainement()                                     
                      
                 avg_res_locale = sum_reponse/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold   
@@ -103,7 +105,6 @@ class knn():
         plt.plot(liste_leaf) 
         plt.title("KNN : Valeurs de la taille des feuilles") 
         plt.show() 
-        plt.plot(liste_leaf)
         print("meilleur_k = " + str(meilleur_k) + " et meilleur leaf_size = " + str(meilleur_leaf))
 
     def entrainement(self):
