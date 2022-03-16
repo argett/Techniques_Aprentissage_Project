@@ -48,7 +48,7 @@ class gradientBoosting():
         
     def recherche_hyperparametres(self, num_fold, learning_rate, n_estimators, min_samples_split): 
         """
-        The function is going to try every possibility of combinaison within the given lists of parameters to find the one which has the less error on the model
+        The function is going to try every possibility of combinaison within the given lists of parameters to find the one which has the less error on the model.
 
         Parameters
         ----------

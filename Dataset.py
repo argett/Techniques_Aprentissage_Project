@@ -19,7 +19,24 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder 
 
 class Dataset:
-    def __init__(self, path, display, selected_data=0.85):
+    def __init__(self, path, display, selected_data=1):
+        """
+        Initiate the dataset by loading the files given a path.
+
+        Parameters
+        ----------
+        path : string
+            The path to the "Data" folder of this project.
+        display : boolean
+            To display or not the histograms of the selected values.
+        selected_data : float [0,1], optional
+            The maximum proportion of data allowed in a 10% range whithin the total range values of the data. The default is 1.
+
+        Returns
+        -------
+        None.
+
+        """
         self.images = []
         self.train = pd.read_csv(str(path + 'train.csv'))
         self.test = pd.read_csv(str(path + 'test.csv'))
@@ -29,7 +46,7 @@ class Dataset:
         
         # preprocessing
         self.preprocess()
-        to_delete = self.plot_caracteristics(display, selected_data)
+        to_delete = self.selectData(display, selected_data)
         self.feature_selection(to_delete)
         
         #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
@@ -63,6 +80,14 @@ class Dataset:
         return data
 
     def preprocess(self):
+        """
+        Calls the functions of data processing
+
+        Returns
+        -------
+        None.
+
+        """
         for (tr_columnName, tr_columnData) in self.train.iteritems():
             if (not tr_columnName == 'id') and (not tr_columnName == 'species'): # TODO : on peux optimiser ?
                 self.center_reduce(tr_columnName, tr_columnData)
@@ -70,6 +95,21 @@ class Dataset:
                 self.troncate(tr_columnName)
 
     def normalize(self, colName, colData):
+        """
+        Normalize the data in the given column name.
+
+        Parameters
+        ----------
+        colName : string
+            Name of the column to be normalized.
+        colData : string
+            Data of the column.
+
+        Returns
+        -------
+        None.
+
+        """
         _min = 0
         _max = 0
         
@@ -96,6 +136,22 @@ class Dataset:
                 self.test.at[i,colName] = (self.test.at[i,colName] - _min) / (_max - _min)
                 
     def center_reduce(self, colName, colData):
+        """
+        Center and reduce the data in the given column name.
+
+        Parameters
+        ----------
+        colName : string
+            Name of the column to be normalized.
+        colData : string
+            Data of the column.
+
+
+        Returns
+        -------
+        None.
+
+        """
         mean = np.mean(colData)
         std = np.std(colData)
         
@@ -107,19 +163,61 @@ class Dataset:
                 self.test.at[i,colName] = (self.test.at[i,colName] - mean) / std
         
     def troncate(self, colName):     
+        """
+        Troncate the data to reduce its precision.
+
+        Parameters
+        ----------
+        colName : string
+            Name of the column to be normalized.
+
+        Returns
+        -------
+        None.
+
+        """
+        # TODO : mettre le 5 en valeur saisissable par l'utilisateur
         self.test[colName] = self.test[colName].round(5)
         self.train[colName] = self.train[colName].round(5)
         
         
     def feature_selection(self, to_delete):
+        """
+        Deleted the data selected by the user.
+
+        Parameters
+        ----------
+        to_delete : list[string]
+            List of the columns names to delete.
+
+        Returns
+        -------
+        None.
+
+        """
         if not to_delete: # lists are considered as bool if empty
             pass
         
-        # automatically it is mixed or hard so we remove mixed first
         self.train.drop(columns=to_delete, axis=1, inplace=True)
         self.test.drop(columns=to_delete, axis=1, inplace=True)
         
-    def plot_caracteristics(self, display, tolerance):
+    def selectData(self, display, tolerance):
+        """
+        Select the data chosen by the user's value. Can plot the histograms of each caracteristic.
+
+        Parameters
+        ----------
+        display : boolean
+            To display or not the histograms of the selected values.
+        tolerance : float [0,1]
+            The maximum proportion of data allowed in a 10% range whithin the total range values of the data.
+
+        Returns
+        -------
+        to_delete : list[string]
+            List of string containing the names of the columns to be deleted.
+
+        """
         to_delete = []
         if display :
             i = 0

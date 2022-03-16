@@ -49,6 +49,31 @@ class randomForest():
         self.min_sample = min_sample
     
     def recherche_hyperparametres(self, num_fold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion):        
+        """
+        The function is going to try every possibility of combinaison within the given lists of parameters to find the one which has the less error on the model
+
+        Parameters
+        ----------
+        num_fold : int
+            The number of time the the k-cross validation is going to be made.
+        nb_trees : list[float]
+            List of all numbers of trees in the forest ot try.
+        maxDepth : list[float] or None
+            List of maximums depth of the tree to try. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples..
+        random_state : list[float]
+            List of values to try that controls both the randomness of the bootstrapping of the samples used when building trees
+        max_features : list[float]
+           List of all number of features to try, to consider when looking for the best split.
+        min_sample : list[float]
+            List of all minimum numbers of samples to try, required to split an internal node.
+        criterion : “gini” or “entropy”
+            The function to measure the quality of a split.
+
+        Returns
+        -------
+        None.
+
+        """
         liste_res = [] 
         liste_tree = [] 
         liste_depth = []
@@ -130,9 +155,28 @@ class randomForest():
         print("meilleur_sample = " + str(meilleur_sample))
         
     def entrainement(self):
+        """
+        Fit the model with respect to the parameters given by the k-fold function or the ones given when initialising the model.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        float
+            The score of the model.
+        """
         self.randomForest = RandomForestClassifier(n_estimators=self.trees, max_depth=self.max_depth, min_samples_split=self.min_sample,criterion=self.criterion, max_features=self.max_features)
         self.randomForest.fit(self.X_learn, self.y_learn.ravel()) # on utilise toutes les données d'entrainement
         return self.randomForest.score(self.X_verify, self.y_verify)
     
     def run(self):
+        """
+        Run the model on pre-loaded testing data.
+
+        Returns
+        -------
+        None.
+
+        """
         print(self.randomForest.predict(self.dh.xTest()))
