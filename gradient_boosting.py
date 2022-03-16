@@ -66,12 +66,12 @@ class gradientBoosting():
         None.
 
         """
-        liste_err = []
+        liste_res = []
         liste_lr = []
         liste_est = []
         liste_sam = []
         
-        meilleur_err = np.inf 
+        meilleur_res = 0
         meilleur_lr = None 
         meilleur_estimantor = None 
         meilleur_sample = None 
@@ -79,7 +79,7 @@ class gradientBoosting():
         for lr in tqdm(learning_rate):  # On teste plusieurs degrés du polynôme 
             for esti in tqdm(n_estimators): 
                 for samp in min_samples_split: 
-                    sum_error = 0 
+                    sum_resultat = 0 
                      
                     self.learning_rate = lr
                     self.estimators = esti
@@ -87,17 +87,17 @@ class gradientBoosting():
          
                     for k in range(num_fold):  # K-fold validation 
                         self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True) 
-                        sum_error += self.entrainement()                                     
+                        sum_resultat += self.entrainement()                                     
                          
-                    avg_err_locale = sum_error/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
+                    avg_res_locale = sum_resultat/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
                     
-                    liste_err.append(avg_err_locale)
+                    liste_res.append(avg_res_locale)
                     liste_lr.append(lr)
                     liste_est.append(esti)
                     liste_sam.append(samp)
 
-                    if(avg_err_locale < meilleur_err): 
-                        meilleur_err = avg_err_locale 
+                    if(avg_res_locale > meilleur_res): 
+                        meilleur_res = avg_res_locale 
                         meilleur_lr = lr 
                         meilleur_estimantor = esti 
                         meilleur_sample = samp 
@@ -106,7 +106,7 @@ class gradientBoosting():
         self.estimators = meilleur_estimantor
         self.min_sample = meilleur_sample
         
-        plt.plot(liste_err)
+        plt.plot(meilleur_res)
         plt.title("Gradient boosting : Bonne réponse moyenne sur les K validations")
         plt.show()
         plt.plot(liste_lr)
