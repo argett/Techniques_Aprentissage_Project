@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class randomForest():
-    def __init__(self, dataHandler, nb_trees=50, max_depth=100, min_sample=2, random_state=10, max_features=1, criterion="gini", proportion=0.2):
+    def __init__(self, dataHandler, nb_trees=200, max_depth=50, min_sample=2, random_state=50, max_features=1, criterion="gini", proportion=0.2):
         """
         Create an instance of the class
 
@@ -64,7 +64,7 @@ class randomForest():
         meilleur_sample = None
         
         for tree in tqdm(nb_trees):  # On teste plusieurs degrés du polynôme
-            for depth in maxDepth:
+            for depth in tqdm(maxDepth):
                 for state in random_state:
                     for feature in max_features:
                         for sample in min_sample:
