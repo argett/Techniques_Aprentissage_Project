@@ -5,11 +5,9 @@ Created on Tue Mar  8 21:21:33 2022
 @author: Lilian
 """
 
-import numpy as np 
 import matplotlib.pyplot as plt 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import GradientBoostingClassifier
-import numpy as np
 from tqdm import tqdm
 
 
