@@ -62,7 +62,6 @@ class gradientBoosting():
         Returns
         -------
         None.
-
         """
         liste_res = []
         liste_lr = []
@@ -77,7 +76,7 @@ class gradientBoosting():
         for lr in tqdm(learning_rate):  # On teste plusieurs degrés du polynôme 
             for esti in tqdm(n_estimators): 
                 for samp in min_samples_split: 
-                    sum_resultat = 0 
+                    sum_reponse = 0 
                      
                     self.learning_rate = lr
                     self.estimators = esti
@@ -85,9 +84,10 @@ class gradientBoosting():
          
                     for k in range(num_fold):  # K-fold validation 
                         self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True) 
-                        sum_resultat += self.entrainement()                                     
+                        self.entrainement()
+                        sum_reponse += self.validate()                                             
                          
-                    avg_res_locale = sum_resultat/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
+                    avg_res_locale = sum_reponse/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
                     
                     liste_res.append(avg_res_locale)
                     liste_lr.append(lr)
@@ -130,13 +130,24 @@ class gradientBoosting():
 
         Returns
         -------
-        float
-            The score of the model.
-
+        None.
         """
         self.gradientBoosting = GradientBoostingClassifier(learning_rate=self.learning_rate, n_estimators=self.estimators, min_samples_split=self.min_sample)
         self.gradientBoosting.fit(self.X_learn, self.y_learn.ravel())
-        return self.gradientBoosting.score(self.X_verify, self.y_verify) 
+    
+    def validate(self):
+        """
+        Take the fitted model to check on the validation dataset.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        float
+            The score of the model.
+        """
+        return self.gradientBoosting.score(self.dh.xValidate(), self.dh.yValidate()) 
      
     def run(self): 
         """

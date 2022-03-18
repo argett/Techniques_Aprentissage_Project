@@ -80,7 +80,8 @@ class knn():
      
                 for ki in range(num_fold):  # K-fold validation 
                     self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=ki, shuffle=True) 
-                    sum_reponse += self.entrainement()                                     
+                    self.entrainement()
+                    sum_reponse += self.validate()                               
                      
                 avg_res_locale = sum_reponse/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold   
                 
@@ -116,13 +117,24 @@ class knn():
 
         Returns
         -------
-        float
-            The score of the model.
-
+        None.
         """
         self.nn = KNeighborsClassifier(self.nb_neighbour) 
         self.nn.fit(self.X_learn, self.y_learn.ravel()) 
-        return self.nn.score(self.X_verify, self.y_verify)
+    
+    def validate(self):
+        """
+        Take the fitted model to check on the validation dataset.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        float
+            The score of the model.
+        """
+        return self.nn.score(self.dh.xValidate(), self.dh.yValidate()) 
 
     def run(self):
         """

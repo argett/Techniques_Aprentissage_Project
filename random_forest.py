@@ -104,7 +104,8 @@ class randomForest():
                 
                             for k in range(num_fold):  # K-fold validation
                                 self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
-                                sum_result += self.entrainement()                                    
+                                self.entrainement()
+                                sum_reponse += self.validate()                                            
                                 
                             avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
                             
@@ -163,12 +164,24 @@ class randomForest():
 
         Returns
         -------
+        None.
+        """
+        self.randomForest = RandomForestClassifier(n_estimators=self.trees, max_depth=self.max_depth, min_samples_split=self.min_sample,criterion=self.criterion, max_features=self.max_features, n_jobs=-1)
+        self.randomForest.fit(self.X_learn, self.y_learn.ravel()) # on utilise toutes les données d'entrainement
+    
+    def validate(self):
+        """
+        Take the fitted model to check on the validation dataset.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
         float
             The score of the model.
         """
-        self.randomForest = RandomForestClassifier(n_estimators=self.trees, max_depth=self.max_depth, min_samples_split=self.min_sample,criterion=self.criterion, max_features=self.max_features)
-        self.randomForest.fit(self.X_learn, self.y_learn.ravel()) # on utilise toutes les données d'entrainement
-        return self.randomForest.score(self.X_verify, self.y_verify)
+        return self.randomForest.score(self.dh.xValidate(), self.dh.yValidate()) 
     
     def run(self):
         """
