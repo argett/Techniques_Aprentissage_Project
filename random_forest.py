@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class randomForest():
-    def __init__(self, dataHandler, nb_trees=800, max_depth=25, min_sample=2, random_state=50, max_features=1, criterion="gini", proportion=0.2):
+    def __init__(self, dataHandler, nb_trees=350, max_depth=25, min_sample=2, random_state=50, max_features=25, criterion="gini", proportion=0.2):
         """
         Create an instance of the class
 
@@ -77,7 +77,7 @@ class randomForest():
         liste_res = [] 
         liste_tree = [] 
         liste_depth = []
-        lister_state = []
+        liste_state = []
         liste_feature = []
         liste_sample = []
         
@@ -111,7 +111,7 @@ class randomForest():
                             liste_res.append(avg_res_locale)  
                             liste_tree.append(tree)  
                             liste_depth.append(depth)  
-                            lister_state.append(state)  
+                            liste_state.append(state)  
                             liste_feature.append(feature)  
                             liste_sample.append(sample)  
                      
@@ -138,7 +138,7 @@ class randomForest():
         plt.plot(liste_depth)  
         plt.title("Random Forest : Profondeur des arbres")  
         plt.show()  
-        plt.plot(lister_state)  
+        plt.plot(liste_state)  
         plt.title("Random Forest : Nombre qui contrôle le boostrapping pour la construction d'arbre")  
         plt.show()  
         plt.plot(liste_feature)  
@@ -182,7 +182,7 @@ class randomForest():
         float
             The score of the model.
         """
-        return self.gradientBoosting.score(self.X_verify, self.y_verify) 
+        return self.randomForest.score(self.X_verify, self.y_verify) 
     
     def run(self):
         """

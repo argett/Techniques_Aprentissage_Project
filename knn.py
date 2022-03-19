@@ -135,7 +135,7 @@ class knn():
         float
             The score of the model.
         """
-        return self.gradientBoosting.score(self.X_verify, self.y_verify) 
+        return self.nn.score(self.X_verify, self.y_verify) 
 
     def run(self):
         """
