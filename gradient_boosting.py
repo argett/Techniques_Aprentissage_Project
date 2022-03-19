@@ -84,8 +84,7 @@ class gradientBoosting():
          
                     for k in range(num_fold):  # K-fold validation 
                         self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True) 
-                        self.entrainement()
-                        sum_result += self.validate()                                             
+                        sum_result += self.entrainement()                                              
                          
                     avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
                     
@@ -130,10 +129,12 @@ class gradientBoosting():
 
         Returns
         -------
-        None.
+        float
+            The score of the model.
         """
         self.gradientBoosting = GradientBoostingClassifier(learning_rate=self.learning_rate, n_estimators=self.estimators, min_samples_split=self.min_sample)
         self.gradientBoosting.fit(self.X_learn, self.y_learn.ravel())
+        return self.validate()
     
     def validate(self):
         """

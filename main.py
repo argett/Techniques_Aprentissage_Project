@@ -110,11 +110,11 @@ if __name__ == "__main__":
         model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
     
             
-    model_knn.entrainement()
+    print(model_knn.entrainement())
     model_knn.run()
     
-    model_rdmForest.entrainement()
+    print(model_rdmForest.entrainement())
     model_rdmForest.run()
     
-    model_gradBoost.entrainement())
+    print(model_gradBoost.entrainement())
     model_gradBoost.run()
