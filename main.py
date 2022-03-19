@@ -38,7 +38,7 @@ les mêmes données? Est-ce que cela transparaît dans le rapport? Avez-vous
 uniquement utilisé les données brutes ou avez-vous essayé de les réorganiser
 pour améliorer vos résultats? Etc.
 """
-
+# gridsearch CV verbose = 1.2.3... n_jobs=-1
 import Dataset as dt
 import random_forest as rForest
 import knn as knn
@@ -46,24 +46,27 @@ import gradient_boosting as gradientB
 
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
-    arg2 = True # Display caracteristics histograms
+    # TODO : arg2 = "knn" "gradBoost" "rdmForest"
+    arg2 = True  # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
+    arg4 = 0     # Boolean to allow cross-validation or not
+    arg5 = 3     # Number of k in the k-cross validation
     
     # KNN
-    arg4 = 8  # Number of K in KNN algorithm
-    arg5 = 64 # Number of leaf size
+    arg6 = 8  # Number of K in KNN algorithm
+    arg7 = 64 # Number of leaf size
     
     # random forest parameters
-    arg6 = 200 # Number of threes in the random forest
-    arg7 = 50 # maximum depth of the tress
-    arg8 = 2 # Number of minimum samples to create a new node
-    arg9 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
-    arg10 = 2 #The number of features to consider when looking for the best split
+    arg8 = 200 # Number of threes in the random forest
+    arg9 = 50 # maximum depth of the tress
+    arg10 = 2 # Number of minimum samples to create a new node
+    arg11 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
+    arg12 = 2 #The number of features to consider when looking for the best split
 
     # Gradient Boosting
-    arg11 = 0.5
-    arg12 = 100
-    arg13 = 2
+    arg13 = 0.5
+    arg14 = 100
+    arg15 = 2
     
     """
     if len(sys.argv) < 8:
@@ -78,40 +81,40 @@ if __name__ == "__main__":
 
     path_data = str(sys.argv[1])
     """
-    dataset = dt.Dataset(arg1, arg2, arg3)    
-    kFold = 2
+    dataset = dt.Dataset(arg1, arg2, arg3) 
+    model_knn = knn.knn(dataset, arg6, arg7)
+    model_rdmForest = rForest.randomForest(dataset, arg8, arg9, arg10, arg11, arg12)
+    model_gradBoost = gradientB.gradientBoosting(dataset, arg13, arg14, arg15) 
     
-    # KNN
-    ks = [3,5,8,10,15,20,30,50,100] 
-    ls = [2,5,10,25,64,99] 
+    if arg4 == 1:  # Cross validation   
+        kFold = arg5
+        
+        # KNN
+        ks = [3,5,8,10,15,20,30,50,80,100] 
+        ls = [2,5,10,25,50,64,99] 
+        model_knn.recherche_hyperparametres(kFold, ks, ls)  
+        
+        # Random Forest
+        nb_trees = [50,200,350,500,800]
+        maxDepth = [25,32,50,64,100]
+        random_state = [10,25,50,75,100]
+        max_features = [1,32,64,88,128]
+        min_sample = [2]
+        criterion = "gini"
+        model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
+        
+        # Gradient Boosting
+        lr = [0.1,0.5,0.75,1]
+        estimator = [300,500,800]
+        sample = [2]
+        model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
     
-    kalgo = knn.knn(dataset, arg4, arg5)
-    kalgo.recherche_hyperparametres(kFold, ks, ls)  
-    print(kalgo.entrainement())  
-    kalgo.run() 
+            
+    model_knn.entrainement()
+    model_knn.run()
     
+    model_rdmForest.entrainement()
+    model_rdmForest.run()
     
-    # Random Forest
-    nb_trees = [50,200,500]
-    maxDepth = [32,50,64,100]
-    random_state = [10,50,100]
-    max_features = [1,64,128]
-    min_sample = [2]
-    criterion = "gini"
-    
-    ia = rForest.randomForest(dataset, arg6, arg7, arg8, arg9, arg10)
-    ia.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
-    print(ia.entrainement())
-    ia.run()
-    
-    
-    # Gradient Boosting
-    lr = [0.1,0.5,0.75,1]
-    estimator = [300,500,800]
-    sample = [2]
-    
-    gd = gradientB.gradientBoosting(dataset, arg11, arg12, arg13) 
-    gd.recherche_hyperparametres(kFold, lr, estimator, sample) 
-    print(gd.entrainement()) 
-    gd.run()
-    
+    model_gradBoost.entrainement())
+    model_gradBoost.run()
