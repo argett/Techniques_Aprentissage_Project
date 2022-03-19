@@ -76,7 +76,7 @@ class gradientBoosting():
         for lr in tqdm(learning_rate):  # On teste plusieurs degrés du polynôme 
             for esti in tqdm(n_estimators): 
                 for samp in min_samples_split: 
-                    sum_reponse = 0 
+                    sum_result = 0 
                      
                     self.learning_rate = lr
                     self.estimators = esti
@@ -85,9 +85,9 @@ class gradientBoosting():
                     for k in range(num_fold):  # K-fold validation 
                         self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True) 
                         self.entrainement()
-                        sum_reponse += self.validate()                                             
+                        sum_result += self.validate()                                             
                          
-                    avg_res_locale = sum_reponse/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
+                    avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
                     
                     liste_res.append(avg_res_locale)
                     liste_lr.append(lr)
@@ -147,7 +147,7 @@ class gradientBoosting():
         float
             The score of the model.
         """
-        return self.gradientBoosting.score(self.dh.xValidate(), self.dh.yValidate()) 
+        return self.gradientBoosting.score(self.X_verify, self.y_verify) 
      
     def run(self): 
         """

@@ -73,7 +73,7 @@ class knn():
          
         for k in tqdm(number_cluster):  # On teste plusieurs degrés du polynôme 
             for ls in leaf:
-                sum_reponse = 0 
+                sum_result = 0 
                  
                 self.nb_neighbour = k
                 self.leaf_size = ls
@@ -81,9 +81,9 @@ class knn():
                 for ki in range(num_fold):  # K-fold validation 
                     self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=ki, shuffle=True) 
                     self.entrainement()
-                    sum_reponse += self.validate()                               
+                    sum_result += self.validate()                               
                      
-                avg_res_locale = sum_reponse/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold   
+                avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold   
                 
                 liste_res.append(avg_res_locale) 
                 liste_k.append(k) 
@@ -119,7 +119,7 @@ class knn():
         -------
         None.
         """
-        self.nn = KNeighborsClassifier(self.nb_neighbour) 
+        self.nn = KNeighborsClassifier(self.nb_neighbour,n_jobs=-1) 
         self.nn.fit(self.X_learn, self.y_learn.ravel()) 
     
     def validate(self):
@@ -134,7 +134,7 @@ class knn():
         float
             The score of the model.
         """
-        return self.nn.score(self.dh.xValidate(), self.dh.yValidate()) 
+        return self.gradientBoosting.score(self.X_verify, self.y_verify) 
 
     def run(self):
         """

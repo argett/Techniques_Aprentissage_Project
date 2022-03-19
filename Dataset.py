@@ -49,7 +49,7 @@ class Dataset:
         to_delete = self.selectData(display, selected_data)
         self.feature_selection(to_delete)
         
-        
+        """
         # because train only as the specie's name and we need a verify, we must split the train dataset
         # and to get a diversified dataset at each program run, we randomly shuffle it
         #shuffle all rows of DataFrame
@@ -57,7 +57,7 @@ class Dataset:
         # and we take the first 80% of the df to create the train and the last 20% to create the validation dataset
         self.validate = self.train.iloc[int(self.train.shape[0]*0.8):]
         self.train = self.train.iloc[:int(self.train.shape[0]*0.8)]
-        
+        """
         #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
         #self.test = self.handling_missing(self.test, 2, self.test.shape[1])
         

@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class randomForest():
-    def __init__(self, dataHandler, nb_trees=200, max_depth=50, min_sample=2, random_state=50, max_features=1, criterion="gini", proportion=0.2):
+    def __init__(self, dataHandler, nb_trees=800, max_depth=25, min_sample=2, random_state=25, max_features=1, criterion="gini", proportion=0.2):
         """
         Create an instance of the class
 
@@ -105,7 +105,7 @@ class randomForest():
                             for k in range(num_fold):  # K-fold validation
                                 self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
                                 self.entrainement()
-                                sum_reponse += self.validate()                                            
+                                sum_result += self.validate()                                            
                                 
                             avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
                             
@@ -181,7 +181,7 @@ class randomForest():
         float
             The score of the model.
         """
-        return self.randomForest.score(self.dh.xValidate(), self.dh.yValidate()) 
+        return self.gradientBoosting.score(self.X_verify, self.y_verify) 
     
     def run(self):
         """
