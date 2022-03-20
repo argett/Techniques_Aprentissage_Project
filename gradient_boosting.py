@@ -103,7 +103,7 @@ class gradientBoosting():
         self.estimators = meilleur_estimantor
         self.min_sample = meilleur_sample
         
-        plt.plot(meilleur_res)
+        plt.plot(liste_res)
         plt.title("Gradient boosting : Bonne réponse moyenne sur les K validations")
         plt.show()
         plt.plot(liste_lr)

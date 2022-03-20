@@ -49,8 +49,8 @@ if __name__ == "__main__":
     # TODO : arg2 = "knn" "gradBoost" "rdmForest"
     arg2 = True  # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
-    arg4 = 0     # Boolean to allow cross-validation or not
-    arg5 = 3     # Number of k in the k-cross validation
+    arg4 = 1     # Boolean to allow cross-validation or not
+    arg5 = 2     # Number of k in the k-cross validation
     
     # KNN
     arg6 = 8  # Number of K in KNN algorithm
@@ -104,8 +104,8 @@ if __name__ == "__main__":
         model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
         
         # Gradient Boosting
-        lr = [0.1,0.5,0.75,1]
-        estimator = [300,500,800]
+        lr = [0.01,0.05,0.1,0.5]
+        estimator = [10,100,400,500]
         sample = [2]
         model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
     
