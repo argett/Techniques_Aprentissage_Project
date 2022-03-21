@@ -82,7 +82,7 @@ if __name__ == "__main__":
     arg2 = False  # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
     arg4 = 0     # Boolean to allow cross-validation or not
-    arg5 = 2     # Number of k in the k-cross validation
+    arg5 = 1     # Number of k in the k-cross validation
     
     # KNN
     arg6 = 3  # Number of K in KNN algorithm
@@ -140,14 +140,14 @@ if __name__ == "__main__":
         estimator = [10,100,400,500]
         sample = [2]
         model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
-
+        
     print(model_knn.entrainement())
     res1 = model_knn.run()
     
     print(model_rdmForest.entrainement())
     res2 = model_rdmForest.run()
-    """
+    
     print(model_gradBoost.entrainement())
     res3 = model_gradBoost.run()
-    """
+    
     processResult([res1.tolist(), res2.tolist()])

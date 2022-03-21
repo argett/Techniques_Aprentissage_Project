@@ -34,7 +34,7 @@ class gradientBoosting():
         None.
 
         """
-        self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), train_size=proportion, random_state=0)
+        self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), test_size=proportion, random_state=0)
         
         self.gradientBoosting = None
         self.dh = dataHandler

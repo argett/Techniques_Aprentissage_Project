@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class randomForest():
-    def __init__(self, dataHandler, nb_trees=350, max_depth=25, min_sample=2, random_state=50, max_features=25, criterion="gini", proportion=0.2):
+    def __init__(self, dataHandler, nb_trees=350, max_depth=50, min_sample=2, random_state=50, max_features=25, criterion="gini", proportion=0.2):
         """
         Create an instance of the class
 
@@ -36,7 +36,7 @@ class randomForest():
         """
         self.randomForest = None
         
-        self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), train_size=proportion, random_state=0) 
+        self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), test_size=proportion, random_state=0) 
         
         self.dh = dataHandler
         self.proportion = proportion
