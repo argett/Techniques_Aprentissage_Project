@@ -45,30 +45,60 @@ import random_forest as rForest
 import knn as knn
 import gradient_boosting as gradientB
 import numpy as np
-
+  
+def processResult(allLists):
+    nbList = len(allLists)
+    if(nbList <= 1):
+        print("No enought models to compare the results")
+        return
+    
+    list_compare = np.zeros(nbList, dtype=int)
+    for i in range(len(allLists[0])):        
+        classes = []
+        for j in range(nbList):
+            classes.append(allLists[j][i])
+            
+        mostCommon_label = max(classes,key=classes.count)
+        
+        for j in range(nbList):
+            if allLists[j][i] == mostCommon_label:
+                list_compare[j] += 1   
+    
+    """
+    plot illissible
+    plt.figure(figsize=(100, 30))
+    for liste in allLists:
+        plt.plot(liste)
+    plt.show()
+    """
+    for i in range(nbList):
+        print("La liste " + str(i) + " a " + str(list_compare[i]) + " / " + str(len(allLists[0])) + " résultats qui sont comme la réponse la plus fréquente")
+    
+    
+    
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
     # TODO : arg2 = "knn" "gradBoost" "rdmForest"
-    arg2 = True  # Display caracteristics histograms
+    arg2 = False  # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
     arg4 = 0     # Boolean to allow cross-validation or not
     arg5 = 2     # Number of k in the k-cross validation
     
     # KNN
-    arg6 = 8  # Number of K in KNN algorithm
-    arg7 = 64 # Number of leaf size
+    arg6 = 3  # Number of K in KNN algorithm
+    arg7 = 2 # Number of leaf size
     
     # random forest parameters
-    arg8 = 200 # Number of threes in the random forest
+    arg8 = 350 # Number of threes in the random forest
     arg9 = 50 # maximum depth of the tress
     arg10 = 2 # Number of minimum samples to create a new node
     arg11 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
-    arg12 = 2 #The number of features to consider when looking for the best split
+    arg12 = 25 #The number of features to consider when looking for the best split
 
     # Gradient Boosting
-    arg13 = 0.5
-    arg14 = 100
-    arg15 = 2
+    arg13 = 0.1  # learning rate
+    arg14 = 400  # number of estimator
+    arg15 = 2  # Minimum number of sample to create a new node
     
     """
     if len(sys.argv) < 8:
@@ -116,33 +146,8 @@ if __name__ == "__main__":
     
     print(model_rdmForest.entrainement())
     res2 = model_rdmForest.run()
-    
+    """
     print(model_gradBoost.entrainement())
     res3 = model_gradBoost.run()
-    
-    processResult([res1, res2, res3])
-    
-    
-def processResult(allLists):
-    nbList = len(allLists)
-    if(nbList <= 1):
-        print("No enought models to compare the results")
-        return
-    
-    list_compare = np.zeros(nbList, dtype=int)
-    for i in range(len(allLists[0])):
-        mostCommon_label = np.max(allLists,key=allLists[:,i].count())
-        
-        for j in range(nbList):
-            if allLists[j,i] == mostCommon_label:
-                list_compare[j] += 1   
-    
-    
-    for liste in allLists:
-        plt.plot(liste)
-    plt.show()
-    
-    for i in range(nbList):
-        print("La liste " + str(i) + "a " + str(list_compare[i]) + " / " + str(nbList) + " résultats qui sont comme la réponse la plus fréquente")
-    
-    
+    """
+    processResult([res1.tolist(), res2.tolist()])
