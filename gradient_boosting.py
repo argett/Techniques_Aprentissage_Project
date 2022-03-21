@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 
 class gradientBoosting():
-    def __init__(self, dataHandler, lr=0.5, estimators=500, min_sample=2, proportion=0.2):
+    def __init__(self, dataHandler, lr=0.1, estimators=400, min_sample=2, proportion=0.2):
         """
         Create an instance of the class
 
@@ -156,6 +156,7 @@ class gradientBoosting():
 
         Returns
         -------
-        None.
+        List[string]
+            Every class or label deduced from the entry dataset with the trained model
         """
-        print(self.gradientBoosting.predict(self.dh.xTest())) 
+        return self.gradientBoosting.predict(self.dh.xTest())

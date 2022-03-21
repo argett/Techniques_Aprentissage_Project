@@ -143,7 +143,7 @@ class knn():
 
         Returns
         -------
-        None.
-
+        List[string]
+            Every class or label deduced from the entry dataset with the trained model
         """
-        print(self.nn.predict(self.dh.xTest()))
+        return self.nn.predict(self.dh.xTest())

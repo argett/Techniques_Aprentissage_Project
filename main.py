@@ -39,17 +39,19 @@ uniquement utilisé les données brutes ou avez-vous essayé de les réorganiser
 pour améliorer vos résultats? Etc.
 """
 # gridsearch CV verbose = 1.2.3... n_jobs=-1
+import matplotlib.pyplot as plt 
 import Dataset as dt
 import random_forest as rForest
 import knn as knn
 import gradient_boosting as gradientB
+import numpy as np
 
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
     # TODO : arg2 = "knn" "gradBoost" "rdmForest"
     arg2 = True  # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
-    arg4 = 1     # Boolean to allow cross-validation or not
+    arg4 = 0     # Boolean to allow cross-validation or not
     arg5 = 2     # Number of k in the k-cross validation
     
     # KNN
@@ -98,23 +100,49 @@ if __name__ == "__main__":
         nb_trees = [50,200,350,500,800]
         maxDepth = [25,32,50,64,100]
         random_state = [10,25,50,75,100]
-        max_features = [1,32,64,88,128]
+        max_features = [1,5,10,15,20,25,30]
         min_sample = [2]
         criterion = "gini"
         model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
-        
+
         # Gradient Boosting
         lr = [0.01,0.05,0.1,0.5]
         estimator = [10,100,400,500]
         sample = [2]
         model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
-    
-            
+
     print(model_knn.entrainement())
-    model_knn.run()
+    res1 = model_knn.run()
     
     print(model_rdmForest.entrainement())
-    model_rdmForest.run()
+    res2 = model_rdmForest.run()
     
     print(model_gradBoost.entrainement())
-    model_gradBoost.run()
+    res3 = model_gradBoost.run()
+    
+    processResult([res1, res2, res3])
+    
+    
+def processResult(allLists):
+    nbList = len(allLists)
+    if(nbList <= 1):
+        print("No enought models to compare the results")
+        return
+    
+    list_compare = np.zeros(nbList, dtype=int)
+    for i in range(len(allLists[0])):
+        mostCommon_label = np.max(allLists,key=allLists[:,i].count())
+        
+        for j in range(nbList):
+            if allLists[j,i] == mostCommon_label:
+                list_compare[j] += 1   
+    
+    
+    for liste in allLists:
+        plt.plot(liste)
+    plt.show()
+    
+    for i in range(nbList):
+        print("La liste " + str(i) + "a " + str(list_compare[i]) + " / " + str(nbList) + " résultats qui sont comme la réponse la plus fréquente")
+    
+    
