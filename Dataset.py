@@ -278,11 +278,15 @@ class Dataset:
                     plt.subplots(figsize=(12, 12))
                     i = 0
         else:
+            ignore=2 # to ignore the 2 first columns (id and species)
             for (columnName, columnData) in self.train.iteritems():
-                n, _, _ = plt.hist(columnData)
-                    
-                if (np.max(n) >= np.sum(n) * tolerance):
-                    to_delete.append(columnName)
+                if ignore == 0:
+                    n, _ = np.histogram(columnData.tolist())
+                        
+                    if (np.max(n) >= np.sum(n) * tolerance):
+                        to_delete.append(columnName)
+                else:
+                    ignore -= 1
         
         return to_delete
                         
