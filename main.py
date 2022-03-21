@@ -81,16 +81,16 @@ if __name__ == "__main__":
     # TODO : arg2 = "knn" "gradBoost" "rdmForest"
     arg2 = False  # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
-    arg4 = 0     # Boolean to allow cross-validation or not
+    arg4 = 0     # Boolean to allow the hyperparameters research or not
     arg5 = 1     # Number of k in the k-cross validation
     
     # KNN
     arg6 = 3  # Number of K in KNN algorithm
-    arg7 = 2 # Number of leaf size
+    arg7 = 2  # Number of leaf size
     
     # random forest parameters
     arg8 = 350 # Number of threes in the random forest
-    arg9 = 50 # maximum depth of the tress
+    arg9 = 50 # maximum depth of the trees
     arg10 = 2 # Number of minimum samples to create a new node
     arg11 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
     arg12 = 25 #The number of features to consider when looking for the best split
@@ -102,12 +102,37 @@ if __name__ == "__main__":
     
     """
     if len(sys.argv) < 8:
-        print("Usage: python main.py sk dataPath\n")
-
-        print("\t path: The path to the Data folder")
-        print("\t display caracteristics: The path to the Data folder")
-        print("\t feature selection: The maximum % of carecteristics in a 10% range of total caracteristics values [0.3,1]")
-        print("\t Number of neighbour for KNN: The number of neighbour in the KNN-calssifyer")
+        print("Usage: python main.py ... and add the parameters\n")
+        print("There are 4 mandatory parameters : \n")
+        
+        print("\t Path: The path to the Data folder, string")
+        print("\t Display caracteristic (0 or 1), to display or not the selected histograms")
+        print("\t Feature selection: The maximum % of carecteristics in a 10% range of total caracteristics values [0.3,1], float
+             \n\t\t 1 = select all data, 0.85 = don't take every caracteristic where 85% of the data is in the 10% range of the total range")
+        print("\t Allow the hyperparameter research (0 or 1): 0 = take the default values, 1 = apply the hyperparameter research")
+        print("\t -only if you allowed the hyperparameter research- Number of K in the kcross validation: [1,10] (10 can be long to compute for gradient boosting for example), integer")
+             
+        print("The following is going to depend on the type of model you want :")
+        
+        print("\n\t\t --- KNN model ---")
+        print("\t Number of neighbour for KNN: The number of neighbour in the KNN-calssifyer. Minimum 1, integer")
+        print("\t Leaf size passed to BallTree or KDTree. This can affect the speed of the construction and query, as well as the memory required to store the tree. The optimal value depends on the nature of the problem. Minimum 1, integer")
+        
+        
+        print("\n\t\t --- Random Forest model ---")
+        print("\t Number of threes in the random forest. [10,1000], integer")
+        print("\t Maximum depth of the tress. Minimum 1, integer")
+        print("\t Number of minimum samples to create a new node. Minimum 1, integer")
+        print("\t Controls both the randomness of the bootstrapping of the samples used when building trees (if bootstrap=True) and the sampling of the features to consider when looking for the best split at each node (if max_features < n_features). Minimum 1, integer")
+        print("\t The number of features to consider when looking for the best split. Minimum 1, integer")
+        
+        
+        print("\n\t\t --- Gradient Boosting model ---")
+        print("\t Learning rate. [0.0001,1], float")
+        print("\t The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance. [10,1000], integer")
+        print("\t The minimum number of samples required to split an internal node. [1,98], integer")
+        
+        
         print(" exemple: python3 main.py ../Data\n")
         return
 
@@ -150,4 +175,4 @@ if __name__ == "__main__":
     print(model_gradBoost.entrainement())
     res3 = model_gradBoost.run()
     
-    processResult([res1.tolist(), res2.tolist()])
+    processResult([res1.tolist(), res2.tolist(), res3.tolist()])
