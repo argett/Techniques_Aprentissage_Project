@@ -35,10 +35,8 @@ class randomForest():
 
         """
         self.randomForest = None
-        
-        self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), test_size=proportion, random_state=0) 
-        
         self.dh = dataHandler
+        
         self.proportion = proportion
         
         self.trees = nb_trees
@@ -103,8 +101,9 @@ class randomForest():
                             self.criterion = criterion
                 
                             for k in range(num_fold):  # K-fold validation
-                                self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
-                                sum_result += self.entrainement()                                
+                                X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
+                                self.entrainement(X_learn, y_learn)
+                                sum_result += self.score(X_verify, y_verify)  
                                 
                             avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
                             
@@ -154,23 +153,25 @@ class randomForest():
         print("meilleur_state = " + str(meilleur_state))
         print("meilleur_sample = " + str(meilleur_sample))
         
-    def entrainement(self):
+    def entrainement(self, xData, yData):
         """
         Fit the model with respect to the parameters given by the k-fold function or the ones given when initialising the model.
 
         Parameters
         ----------
+        xData : 2D array, dataframe
+            Array of the dataset.
+        yData : 1D array, list
+            Class corresponding to the dataset.
 
         Returns
         -------
-        float
-            The score of the model.
+        None.
         """
         self.randomForest = RandomForestClassifier(n_estimators=self.trees, max_depth=self.max_depth, min_samples_split=self.min_sample,criterion=self.criterion, max_features=self.max_features, n_jobs=-1)
-        self.randomForest.fit(self.X_learn, self.y_learn.ravel()) # on utilise toutes les données d'entrainement
-        return self.validate()
+        self.randomForest.fit(xData, yData.ravel())
     
-    def validate(self):
+    def score(self, xData, yData):
         """
         Take the fitted model to check on the validation dataset.
 
@@ -182,7 +183,7 @@ class randomForest():
         float
             The score of the model.
         """
-        return self.randomForest.score(self.X_verify, self.y_verify) 
+        return self.randomForest.score(xData, yData) 
     
     def run(self):
         """
@@ -193,4 +194,4 @@ class randomForest():
         List[string]
             Every class or label deduced from the entry dataset with the trained model
         """
-        return self.randomForest.predict(self.dh.xTest())
+        return self.randomForest.predict(self.dh.xUnknownData())

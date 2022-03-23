@@ -81,8 +81,8 @@ if __name__ == "__main__":
     # TODO : arg2 = "knn" "gradBoost" "rdmForest"
     arg2 = False  # Display caracteristics histograms
     arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
-    arg4 = 0     # Boolean to allow the hyperparameters research or not
-    arg5 = 1     # Number of k in the k-cross validation
+    arg4 = 1     # Boolean to allow the hyperparameters research or not
+    arg5 = 2     # Number of k in the k-cross validation
     
     # KNN
     arg6 = 3  # Number of K in KNN algorithm
@@ -159,20 +159,26 @@ if __name__ == "__main__":
         min_sample = [2]
         criterion = "gini"
         model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
-
+        """
         # Gradient Boosting
         lr = [0.01,0.05,0.1,0.5]
         estimator = [10,100,400,500]
         sample = [2]
         model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
-        
-    print(model_knn.entrainement())
+        """
+    print("KNN :")
+    model_knn.entrainement(dataset.xTrain(), dataset.yTrain())
+    print(model_knn.score(dataset.xTest(), dataset.yTest()))
     res1 = model_knn.run()
     
-    print(model_rdmForest.entrainement())
+    print("Random forest :")
+    model_rdmForest.entrainement(dataset.xTrain(), dataset.yTrain())
+    print(model_rdmForest.score(dataset.xTest(), dataset.yTest()))
     res2 = model_rdmForest.run()
-    
-    print(model_gradBoost.entrainement())
+    """
+    print("Gradient boosting :")
+    model_gradBoost.entrainement(dataset.xTrain(), dataset.yTrain())
+    print(model_gradBoost.score(dataset.xTest(), dataset.yTest()))
     res3 = model_gradBoost.run()
-    
+    """
     processResult([res1.tolist(), res2.tolist(), res3.tolist()])

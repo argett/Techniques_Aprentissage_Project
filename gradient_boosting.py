@@ -34,12 +34,11 @@ class gradientBoosting():
         None.
 
         """
-        self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(dataHandler.xTrain(), dataHandler.yTrain(), test_size=proportion, random_state=0)
-        
         self.gradientBoosting = None
         self.dh = dataHandler
         
-        self.proportion = proportion        
+        self.proportion = proportion    
+        
         self.learning_rate = lr
         self.estimators = estimators
         self.min_sample = min_sample
@@ -83,8 +82,9 @@ class gradientBoosting():
                     self.min_sample = samp
          
                     for k in range(num_fold):  # K-fold validation 
-                        self.X_learn, self.X_verify, self.y_learn, self.y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True) 
-                        sum_result += self.entrainement()                                              
+                        X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True) 
+                        self.entrainement(X_learn, y_learn)       
+                        sum_result += self.score(X_verify, y_verify)                                         
                          
                     avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
                     
@@ -120,23 +120,25 @@ class gradientBoosting():
         print("meilleur_estimantor = " + str(meilleur_estimantor)) 
         print("meilleur_sample = " + str(meilleur_sample)) 
      
-    def entrainement(self): 
+    def entrainement(self, xData, yData): 
         """
         Fit the model with respect to the parameters given by the k-fold function or the ones given when initialising the model.
 
         Parameters
         ----------
+        xData : 2D array, dataframe
+            Array of the dataset.
+        yData : 1D array, list
+            Class corresponding to the dataset.
 
         Returns
         -------
-        float
-            The score of the model.
+        None.
         """
         self.gradientBoosting = GradientBoostingClassifier(learning_rate=self.learning_rate, n_estimators=self.estimators, min_samples_split=self.min_sample)
-        self.gradientBoosting.fit(self.X_learn, self.y_learn.ravel())
-        return self.validate()
+        self.gradientBoosting.fit(xData, yData.ravel())
     
-    def validate(self):
+    def score(self, xData, yData):
         """
         Take the fitted model to check on the validation dataset.
 
@@ -148,7 +150,7 @@ class gradientBoosting():
         float
             The score of the model.
         """
-        return self.gradientBoosting.score(self.X_verify, self.y_verify) 
+        return self.gradientBoosting.score(xData, yData) 
      
     def run(self): 
         """
@@ -159,4 +161,4 @@ class gradientBoosting():
         List[string]
             Every class or label deduced from the entry dataset with the trained model
         """
-        return self.gradientBoosting.predict(self.dh.xTest())
+        return self.gradientBoosting.predict(self.dh.xUnknownData())
