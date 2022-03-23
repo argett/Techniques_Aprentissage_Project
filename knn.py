@@ -79,8 +79,10 @@ class knn():
      
                 for ki in range(num_fold):  # K-fold validation 
                     X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=ki, shuffle=True) 
-                    self.entrainement(X_learn, y_learn)       
-                    sum_result += self.score(X_verify, y_verify)
+                    self.entrainement(X_learn, y_learn)
+                    score = self.score(X_verify, y_verify)
+                    print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
+                    sum_result += score
                      
                 avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold   
                 

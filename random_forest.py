@@ -103,7 +103,9 @@ class randomForest():
                             for k in range(num_fold):  # K-fold validation
                                 X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
                                 self.entrainement(X_learn, y_learn)
-                                sum_result += self.score(X_verify, y_verify)  
+                                score = self.score(X_verify, y_verify)
+                                print("Avec nb_tree = " + str(tree) + ", depth = " + str(depth) +  ", state = " + str(state) +  ", nb_feature = " + str(feature) +  ", nb_sample = " + str(sample)+ ", le score de verify est " + str(score))
+                                sum_result += score
                                 
                             avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
                             
