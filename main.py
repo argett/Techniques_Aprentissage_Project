@@ -80,25 +80,27 @@ if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
     # TODO : arg2 = "knn" "gradBoost" "rdmForest"
     arg2 = False  # Display caracteristics histograms
-    arg3 = 0.85  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
-    arg4 = 1     # Boolean to allow the hyperparameters research or not
-    arg5 = 2     # Number of k in the k-cross validation
+    arg3 = 1  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic    
+    arg4 = -1 # Number of K for Train/Test split kcross-validation. -1 for no kcross validation
+    
+    arg5 = 0     # Boolean to allow the hyperparameters research or not
+    arg6 = 1     # Number of k in the k-cross validation
     
     # KNN
-    arg6 = 3  # Number of K in KNN algorithm
-    arg7 = 2  # Number of leaf size
+    arg7 = 3  # Number of K in KNN algorithm
+    arg8 = 2  # Number of leaf size
     
     # random forest parameters
-    arg8 = 350 # Number of threes in the random forest
-    arg9 = 50 # maximum depth of the trees
-    arg10 = 2 # Number of minimum samples to create a new node
-    arg11 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
-    arg12 = 25 #The number of features to consider when looking for the best split
+    arg9 = 350 # Number of threes in the random forest
+    arg10 = 50 # maximum depth of the trees
+    arg11 = 2 # Number of minimum samples to create a new node
+    arg12 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
+    arg13 = 25 #The number of features to consider when looking for the best split
 
     # Gradient Boosting
-    arg13 = 0.1  # learning rate
-    arg14 = 400  # number of estimator
-    arg15 = 2  # Minimum number of sample to create a new node
+    arg14 = 0.1  # learning rate
+    arg15 = 400  # number of estimator
+    arg16 = 2  # Minimum number of sample to create a new node
     
     """
     if len(sys.argv) < 8:
@@ -109,6 +111,7 @@ if __name__ == "__main__":
         print("\t Display caracteristic (0 or 1), to display or not the selected histograms")
         print("\t Feature selection: The maximum % of carecteristics in a 10% range of total caracteristics values [0.3,1], float
              \n\t\t 1 = select all data, 0.85 = don't take every caracteristic where 85% of the data is in the 10% range of the total range")
+        print("\t Number of K for Train/Test split kcross-validation. min 3 or -1 for no kcross validation, int)
         print("\t Allow the hyperparameter research (0 or 1): 0 = take the default values, 1 = apply the hyperparameter research")
         print("\t -only if you allowed the hyperparameter research- Number of K in the kcross validation: [1,10] (10 can be long to compute for gradient boosting for example), integer")
              
@@ -138,13 +141,14 @@ if __name__ == "__main__":
 
     path_data = str(sys.argv[1])
     """
-    dataset = dt.Dataset(arg1, arg2, arg3) 
-    model_knn = knn.knn(dataset, arg6, arg7)
-    model_rdmForest = rForest.randomForest(dataset, arg8, arg9, arg10, arg11, arg12)
-    model_gradBoost = gradientB.gradientBoosting(dataset, arg13, arg14, arg15) 
     
-    if arg4 == 1:  # Cross validation   
-        kFold = arg5
+    dataset = dt.Dataset(arg1, arg2, arg3, arg4) 
+    model_knn = knn.knn(dataset, arg7, arg8)
+    model_rdmForest = rForest.randomForest(dataset, arg9, arg10, arg11, arg12, arg13)
+    model_gradBoost = gradientB.gradientBoosting(dataset, arg14, arg15, arg16) 
+    
+    if arg5 == 1:  # Cross validation   
+        kFold = arg6
         
         # KNN
         ks = [3,5,8,10,15,20,30,50,80,100] 
