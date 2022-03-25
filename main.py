@@ -74,6 +74,49 @@ def processResult(allLists):
     for i in range(nbList):
         print("La liste " + str(i) + " a " + str(list_compare[i]) + " / " + str(len(allLists[0])) + " résultats qui sont comme la réponse la plus fréquente")
     
+def Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost):
+    kFold = arg6
+    
+    # KNN
+    ks = [3] 
+    ls = [2] 
+    model_knn.recherche_hyperparametres(kFold, ks, ls)  
+    
+    # Random Forest
+    nb_trees = [350]
+    maxDepth = [50]
+    random_state = [50]
+    max_features = [25]
+    min_sample = [2]
+    criterion = "gini"
+    model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
+    
+    """
+    # Gradient Boosting
+    lr = [0.1]
+    estimator = [400]
+    sample = [2]
+    model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
+    """
+    
+def train_test(model_knn, model_rdmForest, model_gradBoost, dataset):
+    print("KNN :")
+    model_knn.entrainement(dataset.xTrain(), dataset.yTrain())
+    print("score Test = " + str(model_knn.score(dataset.xTest(), dataset.yTest())))
+    #res1 = model_knn.run()
+    
+    print("Random forest :")
+    model_rdmForest.entrainement(dataset.xTrain(), dataset.yTrain())
+    print("score Test = " + str(model_rdmForest.score(dataset.xTest(), dataset.yTest())))
+    #res2 = model_rdmForest.run()
+    
+    print("Gradient boosting :")
+    model_gradBoost.entrainement(dataset.xTrain(), dataset.yTrain())
+    print("score Test = " + str(model_gradBoost.score(dataset.xTest(), dataset.yTest())))
+    #res3 = model_gradBoost.run()
+    
+    return 0#[res1.tolist(), res2.tolist(), res3.tolist()]
+    
     
     
 if __name__ == "__main__":
@@ -81,7 +124,7 @@ if __name__ == "__main__":
     # TODO : arg2 = "knn" "gradBoost" "rdmForest"
     arg2 = False  # Display caracteristics histograms
     arg3 = 1  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic    
-    arg4 = -1 # Number of K for Train/Test split kcross-validation. -1 for no kcross validation
+    arg4 = 3 # Number of K for Train/Test split kcross-validation. -1 for no kcross validation
     
     arg5 = 0     # Boolean to allow the hyperparameters research or not
     arg6 = 1     # Number of k in the k-cross validation
@@ -148,41 +191,13 @@ if __name__ == "__main__":
     model_gradBoost = gradientB.gradientBoosting(dataset, arg14, arg15, arg16) 
     
     if arg5 == 1:  # Cross validation   
-        kFold = arg6
-        
-        # KNN
-        ks = [3,5,8,10,15,20,30,50,80,100] 
-        ls = [2,5,10,25,50,64,99] 
-        model_knn.recherche_hyperparametres(kFold, ks, ls)  
-        
-        # Random Forest
-        nb_trees = [50,200,350,500,800]
-        maxDepth = [25,32,50,64,100]
-        random_state = [10,25,50,75,100]
-        max_features = [1,5,10,15,20,25,30]
-        min_sample = [2]
-        criterion = "gini"
-        model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
-        """
-        # Gradient Boosting
-        lr = [0.01,0.05,0.1,0.5]
-        estimator = [10,100,400,500]
-        sample = [2]
-        model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
-        """
-    print("KNN :")
-    model_knn.entrainement(dataset.xTrain(), dataset.yTrain())
-    print(model_knn.score(dataset.xTest(), dataset.yTest()))
-    res1 = model_knn.run()
-    
-    print("Random forest :")
-    model_rdmForest.entrainement(dataset.xTrain(), dataset.yTrain())
-    print(model_rdmForest.score(dataset.xTest(), dataset.yTest()))
-    res2 = model_rdmForest.run()
-    """
-    print("Gradient boosting :")
-    model_gradBoost.entrainement(dataset.xTrain(), dataset.yTrain())
-    print(model_gradBoost.score(dataset.xTest(), dataset.yTest()))
-    res3 = model_gradBoost.run()
-    """
-    processResult([res1.tolist(), res2.tolist(), res3.tolist()])
+        Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost)
+            
+    if(dataset.Kcross):
+        for ki in range(dataset.split):
+            print("================= kcross de split = " + str(ki) + " =================")
+            dataset.split_data(ki)
+            train_test(model_knn, model_rdmForest, model_gradBoost, dataset)
+    else:
+        resultats = train_test(model_knn, model_rdmForest, model_gradBoost, dataset)
+        processResult(resultats)

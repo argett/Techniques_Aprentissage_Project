@@ -43,6 +43,7 @@ class Dataset:
 
         """
         self.images = []
+        self.split = train_split
         self.train = pd.read_csv(str(path + 'train.csv'))
         self.xUnknownData = pd.read_csv(str(path + 'test.csv'))
         
@@ -68,14 +69,15 @@ class Dataset:
             self.train = self.train.iloc[:int(self.train.shape[0]*0.8)]
         else:
             # We want to try different configurations of train/test splits
-            temp = self.train
             self.Kcross = True
-            self.train = np.ndarray(shape=train_split)
+            self.cells = []
             
             for i in range(train_split):
-                self.train[i] = temp.iloc[int(temp.shape[0]*i/train_split):int(temp.shape[0]*(i+1)/train_split)]
-                
-            self.test = None # the split is going to happen in a function
+                self.cells.append(self.train.iloc[int(self.train.shape[0]*i/train_split):int(self.train.shape[0]*(i+1)/train_split)])
+            
+            # on reset les dataset car ils vont être initialisé correctement par la suite
+            self.train = pd.DataFrame()
+            self.test = pd.DataFrame()
         
         #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
         #self.test = self.handling_missing(self.test, 2, self.test.shape[1])
@@ -309,7 +311,14 @@ class Dataset:
         
         return to_delete
                         
-            
+    def split_data(self, k):
+        l = []
+        for ki in range(self.split):
+            if (ki != k):
+                l.append(self.cells[ki][:])
+                
+        self.train = pd.concat(l)    
+        self.test = self.cells[k]
 
     def get_Species(self):
         self.species = []

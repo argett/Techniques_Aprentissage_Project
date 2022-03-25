@@ -172,6 +172,7 @@ class randomForest():
         """
         self.randomForest = RandomForestClassifier(n_estimators=self.trees, max_depth=self.max_depth, min_samples_split=self.min_sample,criterion=self.criterion, max_features=self.max_features, n_jobs=-1)
         self.randomForest.fit(xData, yData.ravel())
+        print("score Train = " + str(self.score(xData, yData.ravel())))
     
     def score(self, xData, yData):
         """

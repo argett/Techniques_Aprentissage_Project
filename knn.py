@@ -127,6 +127,7 @@ class knn():
         """
         self.nn = KNeighborsClassifier(n_neighbors=self.nb_neighbour, leaf_size=self.leaf_size, n_jobs=-1) 
         self.nn.fit(xData, yData.ravel())
+        print("score Train = " + str(self.score(xData, yData.ravel())))
     
     def score(self, xData, yData):
         """

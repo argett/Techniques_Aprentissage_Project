@@ -139,6 +139,7 @@ class gradientBoosting():
         """
         self.gradientBoosting = GradientBoostingClassifier(learning_rate=self.learning_rate, n_estimators=self.estimators, min_samples_split=self.min_sample)
         self.gradientBoosting.fit(xData, yData.ravel())
+        print("score Train = " + str(self.score(xData, yData.ravel())))
     
     def score(self, xData, yData):
         """
