@@ -190,12 +190,19 @@ if __name__ == "__main__":
     model_rdmForest = rForest.randomForest(dataset, arg9, arg10, arg11, arg12, arg13)
     model_gradBoost = gradientB.gradientBoosting(dataset, arg14, arg15, arg16) 
     
-    if arg5 == 1:  # Cross validation   
-        Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost)
+    if arg5 == 1:  # Cross validation        
+        if(dataset.Kcross):
+            for ki in range(dataset.split):
+                print("================= Recherche hyperparamètres, kcross de dataset split = " + str(ki) + " =================")
+                dataset.split_data(ki)
+                Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost)
+        else:
+            Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost)
+        
             
     if(dataset.Kcross):
         for ki in range(dataset.split):
-            print("================= kcross de split = " + str(ki) + " =================")
+            print("================= kcross de dataset split = " + str(ki) + " =================")
             dataset.split_data(ki)
             train_test(model_knn, model_rdmForest, model_gradBoost, dataset)
     else:
