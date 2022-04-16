@@ -191,7 +191,7 @@ if __name__ == "__main__":
     model_gradBoost = gradientB.gradientBoosting(dataset, arg14, arg15, arg16) 
     
     if arg5 == 1:  # Cross validation        
-        if(dataset.Kcross):
+        if(dataset.Kcross): # dataset kcross
             for ki in range(dataset.split):
                 print("================= Recherche hyperparamètres, kcross de dataset split = " + str(ki) + " =================")
                 dataset.split_data(ki)
@@ -202,7 +202,7 @@ if __name__ == "__main__":
             
     if(dataset.Kcross):
         for ki in range(dataset.split):
-            print("================= kcross de dataset split = " + str(ki) + " =================")
+            print("================= Tests kcross de dataset split pour entrainement = " + str(ki) + " =================")
             dataset.split_data(ki)
             train_test(model_knn, model_rdmForest, model_gradBoost, dataset)
     else:
