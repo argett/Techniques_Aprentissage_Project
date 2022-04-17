@@ -39,6 +39,7 @@ uniquement utilisé les données brutes ou avez-vous essayé de les réorganiser
 pour améliorer vos résultats? Etc.
 """
 # gridsearch CV verbose = 1.2.3... n_jobs=-1
+from tqdm import tqdm
 import matplotlib.pyplot as plt 
 import Dataset as dt
 import random_forest as rForest
@@ -102,17 +103,17 @@ def Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost):
 def train_test(model_knn, model_rdmForest, model_gradBoost, dataset):
     print("KNN :")
     model_knn.entrainement(dataset.xTrain(), dataset.yTrain())
-    print("score Test = " + str(model_knn.score(dataset.xTest(), dataset.yTest())))
+    print("score Test = " + str(round(model_knn.score(dataset.xTest(), dataset.yTest()),4)*100) + "%, score train = " + str(round(model_knn.err_train[-1],4)*100) + "%")
     #res1 = model_knn.run()
     
     print("Random forest :")
     model_rdmForest.entrainement(dataset.xTrain(), dataset.yTrain())
-    print("score Test = " + str(model_rdmForest.score(dataset.xTest(), dataset.yTest())))
+    print("score Test = " + str(round(model_rdmForest.score(dataset.xTest(), dataset.yTest()),4)*100) + "%, score train = " + str(round(model_rdmForest.err_train[-1],4)*100) + "%")
     #res2 = model_rdmForest.run()
     
     print("Gradient boosting :")
     model_gradBoost.entrainement(dataset.xTrain(), dataset.yTrain())
-    print("score Test = " + str(model_gradBoost.score(dataset.xTest(), dataset.yTest())))
+    print("score Test = " + str(round(model_gradBoost.score(dataset.xTest(), dataset.yTest()),4)*100) + "%, score train = " + str(round(model_gradBoost.err_train[-1],4)*100) + "%")
     #res3 = model_gradBoost.run()
     
     return 0#[res1.tolist(), res2.tolist(), res3.tolist()]
@@ -121,7 +122,6 @@ def train_test(model_knn, model_rdmForest, model_gradBoost, dataset):
     
 if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
-    # TODO : arg2 = "knn" "gradBoost" "rdmForest"
     arg2 = False  # Display caracteristics histograms
     arg3 = 1  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic    
     arg4 = 3 # Number of K for Train/Test split kcross-validation. -1 for no kcross validation
@@ -132,18 +132,19 @@ if __name__ == "__main__":
     # KNN
     arg7 = 3  # Number of K in KNN algorithm
     arg8 = 2  # Number of leaf size
+    arg9 = True # 1=Using manhattan distance, 0=euclidean distance
     
     # random forest parameters
-    arg9 = 350 # Number of threes in the random forest
-    arg10 = 50 # maximum depth of the trees
-    arg11 = 2 # Number of minimum samples to create a new node
-    arg12 = 50 # Controls both the randomness of the bootstrapping of the samples used when building trees
-    arg13 = 25 #The number of features to consider when looking for the best split
+    arg10 = 350 # Number of threes in the random forest 50
+    arg11 = 50 # maximum depth of the trees 10
+    arg12 = 2 # Number of minimum samples to create a new node 2
+    arg13 = 10 # Controls both the randomness of the bootstrapping of the samples used when building trees 10
+    arg14 = 1 #The number of features to consider when looking for the best split 1
 
     # Gradient Boosting
-    arg14 = 0.1  # learning rate
-    arg15 = 400  # number of estimator
-    arg16 = 2  # Minimum number of sample to create a new node
+    arg15 = 0.1  # learning rate
+    arg16 = 400  # number of estimator
+    arg17 = 5  # Minimum number of sample to create a new node
     
     """
     if len(sys.argv) < 8:
@@ -154,8 +155,8 @@ if __name__ == "__main__":
         print("\t Display caracteristic (0 or 1), to display or not the selected histograms")
         print("\t Feature selection: The maximum % of carecteristics in a 10% range of total caracteristics values [0.3,1], float
              \n\t\t 1 = select all data, 0.85 = don't take every caracteristic where 85% of the data is in the 10% range of the total range")
-        print("\t Number of K for Train/Test split kcross-validation. min 3 or -1 for no kcross validation, int)
-        print("\t Allow the hyperparameter research (0 or 1): 0 = take the default values, 1 = apply the hyperparameter research")
+        print("\t Number of K for Train/Test split kcross-validation. min 3 or -1 for no kcross validation, int")
+        print("\t Allow the hyperparameter research (0 or 1): 0 = take the default or selected values, 1 = apply the hyperparameter research")
         print("\t -only if you allowed the hyperparameter research- Number of K in the kcross validation: [1,10] (10 can be long to compute for gradient boosting for example), integer")
              
         print("The following is going to depend on the type of model you want :")
@@ -163,6 +164,7 @@ if __name__ == "__main__":
         print("\n\t\t --- KNN model ---")
         print("\t Number of neighbour for KNN: The number of neighbour in the KNN-calssifyer. Minimum 1, integer")
         print("\t Leaf size passed to BallTree or KDTree. This can affect the speed of the construction and query, as well as the memory required to store the tree. The optimal value depends on the nature of the problem. Minimum 1, integer")
+        print("\t To use the Manhattan distance or Euclidean. 1 = Manhattan, 0 = Euclidean, integer")
         
         
         print("\n\t\t --- Random Forest model ---")
@@ -186,9 +188,9 @@ if __name__ == "__main__":
     """
     
     dataset = dt.Dataset(arg1, arg2, arg3, arg4) 
-    model_knn = knn.knn(dataset, arg7, arg8)
-    model_rdmForest = rForest.randomForest(dataset, arg9, arg10, arg11, arg12, arg13)
-    model_gradBoost = gradientB.gradientBoosting(dataset, arg14, arg15, arg16) 
+    model_knn = knn.knn(dataset, arg7, arg8, manhattan=(arg9))
+    model_rdmForest = rForest.randomForest(dataset, arg10, arg11, arg12, arg13, arg14)
+    model_gradBoost = gradientB.gradientBoosting(dataset, arg15, arg16, arg17) 
     
     if arg5 == 1:  # Cross validation        
         if(dataset.Kcross): # dataset kcross
@@ -209,8 +211,8 @@ if __name__ == "__main__":
     """
     
     if(dataset.Kcross):
-        for ki in range(dataset.split):
-            print("================= Tests kcross de dataset split pour entrainement = " + str(ki) + " =================")
+        for ki in tqdm(range(dataset.split)):
+            print("\n================= Tests kcross de dataset split pour entrainement = " + str(ki) + " =================\n")
             dataset.split_data(ki)
             train_test(model_knn, model_rdmForest, model_gradBoost, dataset)
     else:
