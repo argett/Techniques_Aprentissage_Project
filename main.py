@@ -199,7 +199,15 @@ if __name__ == "__main__":
         else:
             Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost)
         
-            
+    
+    """     
+    plt.plot(model_knn.err_train, label='Score train')
+    plt.plot(model_knn.err_valid, label='Score valid')
+    plt.legend()
+    plt.title("KNN : Bonne réponse moyenne sur K-fold validation avec distance de Manhattan")
+    plt.show()
+    """
+    
     if(dataset.Kcross):
         for ki in range(dataset.split):
             print("================= Tests kcross de dataset split pour entrainement = " + str(ki) + " =================")

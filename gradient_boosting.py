@@ -43,6 +43,9 @@ class gradientBoosting():
         self.estimators = estimators
         self.min_sample = min_sample
         
+        self.err_train = []
+        self.err_valid = []
+        
     def recherche_hyperparametres(self, num_fold, learning_rate, n_estimators, min_samples_split): 
         """
         The function is going to try every possibility of combinaison within the given lists of parameters to find the one which has the less error on the model.
@@ -84,9 +87,9 @@ class gradientBoosting():
                     for k in range(num_fold):  # K-fold validation 
                         X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True) 
                         self.entrainement(X_learn, y_learn)
-                        score = self.score(X_verify, y_verify)
-                        print("Avec learning_rate = " + str(lr) + ", nb_estimator = " + str(esti) +  ", nb_sample = " + str(samp) + ", le score de verify est " + str(score))
-                        sum_result += score
+                        self.err_valid.append(self.score(X_verify, y_verify))
+                        #print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
+                        sum_result += self.err_train[-1]
                          
                     avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
                     
@@ -139,7 +142,7 @@ class gradientBoosting():
         """
         self.gradientBoosting = GradientBoostingClassifier(learning_rate=self.learning_rate, n_estimators=self.estimators, min_samples_split=self.min_sample)
         self.gradientBoosting.fit(xData, yData.ravel())
-        print("score Train = " + str(self.score(xData, yData.ravel())))
+        self.err_train.append(self.score(xData, yData.ravel()))
     
     def score(self, xData, yData):
         """

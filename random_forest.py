@@ -45,6 +45,9 @@ class randomForest():
         self.max_depth = max_depth
         self.rdm_state = random_state
         self.min_sample = min_sample
+        
+        self.err_train = []
+        self.err_valid = []
     
     def recherche_hyperparametres(self, num_fold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion):        
         """
@@ -103,9 +106,9 @@ class randomForest():
                             for k in range(num_fold):  # K-fold validation
                                 X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
                                 self.entrainement(X_learn, y_learn)
-                                score = self.score(X_verify, y_verify)
-                                print("Avec nb_tree = " + str(tree) + ", depth = " + str(depth) +  ", state = " + str(state) +  ", nb_feature = " + str(feature) +  ", nb_sample = " + str(sample)+ ", le score de verify est " + str(score))
-                                sum_result += score
+                                self.err_valid.append(self.score(X_verify, y_verify))
+                                #print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
+                                sum_result += self.err_train[-1]
                                 
                             avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
                             
@@ -172,7 +175,7 @@ class randomForest():
         """
         self.randomForest = RandomForestClassifier(n_estimators=self.trees, max_depth=self.max_depth, min_samples_split=self.min_sample,criterion=self.criterion, max_features=self.max_features, n_jobs=-1)
         self.randomForest.fit(xData, yData.ravel())
-        print("score Train = " + str(self.score(xData, yData.ravel())))
+        self.err_train.append(self.score(xData, yData.ravel()))
     
     def score(self, xData, yData):
         """

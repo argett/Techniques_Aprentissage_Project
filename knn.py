@@ -13,7 +13,7 @@ from sklearn.neighbors import KNeighborsClassifier
  
  
 class knn():
-    def __init__(self, dataHandler, k=3, leaf_size=2, proportion=0.2, manhattan=False):
+    def __init__(self, dataHandler, k=3, leaf_size=2, proportion=0.2, manhattan=True):
         """ 
         Create an instance of the class 
  
@@ -43,6 +43,9 @@ class knn():
         self.nb_neighbour = k 
         self.leaf_size = leaf_size
         self.distance_method = manhattan # euclidean distance by default     
+        
+        self.err_train = []
+        self.err_valid = []
 
     def recherche_hyperparametres(self, num_fold, number_cluster, leaf):
         """
@@ -80,9 +83,9 @@ class knn():
                 for ki in range(num_fold):  # K-fold validation 
                     X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=ki, shuffle=True) 
                     self.entrainement(X_learn, y_learn)
-                    score = self.score(X_verify, y_verify)
-                    print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
-                    sum_result += score
+                    self.err_valid.append(self.score(X_verify, y_verify))
+                    #print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
+                    sum_result += self.err_valid[-1]
                      
                 avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold   
                 
@@ -97,7 +100,7 @@ class knn():
                 
         self.nb_neighbour = meilleur_k
         self.leaf_size = meilleur_leaf
-         
+        
         plt.plot(liste_res) 
         plt.title("KNN : Bonne réponse moyenne sur les K-fold validations") 
         plt.show() 
@@ -127,11 +130,11 @@ class knn():
         """
         self.nn = KNeighborsClassifier(n_neighbors=self.nb_neighbour, leaf_size=self.leaf_size, n_jobs=-1) 
         self.nn.fit(xData, yData.ravel())
-        print("score Train = " + str(self.score(xData, yData.ravel())))
+        self.err_train.append(self.score(xData, yData.ravel()))
     
     def score(self, xData, yData):
         """
-        Take the fitted model to check on the validation dataset.
+        Compute the score of the model.
 
         Parameters
         ----------
