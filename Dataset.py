@@ -53,7 +53,7 @@ class Dataset:
         self.images = []
         self.split = train_split
         self.train = pd.read_csv(str(path + 'train.csv'))
-        self.xUnknownData = pd.read_csv(str(path + 'test.csv'))
+        self.unknownData = pd.read_csv(str(path + 'test.csv'))
 
         for i in range(1, 1585):
             self.images.append(mpimg.imread(str("Data/images/" + str(i) + ".jpg")))
@@ -155,8 +155,8 @@ class Dataset:
 
         tr_min = np.min(colData)
         tr_max = np.max(colData)
-        te_min = np.min(self.xUnknownData.loc[:, colName])
-        te_max = np.max(self.xUnknownData.loc[:, colName])
+        te_min = np.min(self.unknownData.loc[:, colName])
+        te_max = np.max(self.unknownData.loc[:, colName])
 
         if tr_min < te_min:
             _min = tr_min
@@ -172,8 +172,8 @@ class Dataset:
             self.train.at[i,colName] = (self.train.at[i,colName] - _min) / (_max - _min)
 
             # the test has less values than the train dataset
-            if i < len(self.xUnknownData.loc[:, colName]):
-                self.xUnknownData.at[i, colName] = (self.xUnknownData.at[i, colName] - _min) / (_max - _min)
+            if i < len(self.unknownData.loc[:, colName]):
+                self.unknownData.at[i, colName] = (self.unknownData.at[i, colName] - _min) / (_max - _min)
 
     def center_reduce(self, colName, colData):
         """
@@ -199,8 +199,8 @@ class Dataset:
             self.train.at[i, colName] = (self.train.at[i, colName] - mean) / std
 
             # the xUnknownData has less values than the train dataset
-            if i < len(self.xUnknownData.loc[:, colName]):
-                self.xUnknownData.at[i, colName] = (self.xUnknownData.at[i, colName] - mean) / std
+            if i < len(self.unknownData.loc[:, colName]):
+                self.unknownData.at[i, colName] = (self.unknownData.at[i, colName] - mean) / std
 
     def troncate(self, colName):
         """
@@ -218,7 +218,7 @@ class Dataset:
         """
         # TODO : mettre le 5 en valeur saisissable par l'utilisateur
         self.train[colName] = self.train[colName].round(5)
-        self.xUnknownData[colName] = self.xUnknownData[colName].round(5)
+        self.unknownData[colName] = self.unknownData[colName].round(5)
 
     def feature_selection(self, to_delete):
         """
@@ -238,7 +238,7 @@ class Dataset:
             pass
 
         self.train.drop(columns=to_delete, axis=1, inplace=True)
-        self.xUnknownData.drop(columns=to_delete, axis=1, inplace=True)
+        self.unknownData.drop(columns=to_delete, axis=1, inplace=True)
 
     def selectData(self, display, tolerance):
         """
@@ -361,6 +361,6 @@ class Dataset:
         return t.to_numpy()
 
     def xUnknownData(self):
-        X = np.ndarray(shape=[2, self.xUnknownData.shape[1]])
-        X = self.xUnknownData.loc[:, (self.xUnknownData.columns != 'id')]
+        X = np.ndarray(shape=[2, self.unknownData.shape[1]])
+        X = self.unknownData.loc[:, (self.unknownData.columns != 'id')]
         return X.to_numpy()
