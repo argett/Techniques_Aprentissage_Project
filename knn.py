@@ -74,7 +74,7 @@ class knn():
         meilleur_dist = None
         meilleur_k = None 
         meilleur_leaf = None 
-         
+        
         for dis in distance:
             for k in tqdm(number_cluster):  # On teste plusieurs degrés du polynôme 
                 for ls in leaf:

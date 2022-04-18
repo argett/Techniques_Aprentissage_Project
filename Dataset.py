@@ -40,7 +40,6 @@ class Dataset:
         Returns
         -------
         None.
-
         """
         self.images = []
         self.split = train_split
@@ -100,7 +99,6 @@ class Dataset:
         -------
         data : Dataframe
             Le Dataframe corrigé
-
         """
         
         imputer = SimpleImputer(missing_values=np.nan, strategy='constant', fill_value=0)
@@ -116,7 +114,6 @@ class Dataset:
         Returns
         -------
         None.
-
         """
         for (tr_columnName, tr_columnData) in self.train.iteritems():
             if (not tr_columnName == 'id') and (not tr_columnName == 'species'): # TODO : on peux optimiser ?
