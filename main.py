@@ -80,7 +80,7 @@ def processResult(allLists):
         print("La liste " + str(i) + " a " + str(list_compare[i]) + " / " + str(len(allLists[0])) + " résultats qui sont comme la réponse la plus fréquente")
 
 
-def Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost):
+def Kcross_validation(arg6, model_lda):  # arg6, model_knn, model_rdmForest, model_lda, model_gradBoost):
     kFold = arg6
 
     # KNN
@@ -105,6 +105,10 @@ def Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost):
     model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample)
     """
 
+    # Linear Discriminant Analysis
+    solver = ["svd", "lsqr", "eigen"]
+    shrinkage = list(np.arange(0.0, 1.0, 0.01))
+    model_lda.recherche_hyperparametres(kFold, solver, shrinkage)
 
 def train_test(model_knn, model_rdmForest, model_gradBoost, model_lda, dataset):
     print("KNN :")
@@ -123,8 +127,9 @@ def train_test(model_knn, model_rdmForest, model_gradBoost, model_lda, dataset):
     # res3 = model_gradBoost.run()
 
     print("LDA :")
-    model_lda.hyperparameters_search(dataset.xTrain(), dataset.yTrain())
+    model_lda.entrainement(dataset.xTrain(), dataset.yTrain())
     print("score Test = " + str(round(model_lda.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_lda.err_train[-1], 4)*100) + "%")
+    res4 = model_lda.run()
 
     return 0  # [res1.tolist(), res2.tolist(), res3.tolist()]
 
@@ -133,9 +138,9 @@ if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
     arg2 = False  # Display caracteristics histograms
     arg3 = 1  # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic
-    arg4 = 3  # Number of K for Train/Test split kcross-validation. -1 for no kcross validation
+    arg4 = -1  # Number of K for Train/Test split kcross-validation. -1 for no kcross validation
 
-    arg5 = 0     # Boolean to allow the hyperparameters research or not
+    arg5 = 1    # Boolean to allow the hyperparameters research or not
     arg6 = 1     # Number of k in the k-cross validation
 
     # KNN
@@ -156,7 +161,8 @@ if __name__ == "__main__":
     arg17 = 5  # Minimum number of sample to create a new node
 
     # LDA
-    # ...
+    arg18 = "svd"  # solver
+    arg19 = 0.2  # shrinkage
 
     """
     if len(sys.argv) < 8:
@@ -199,7 +205,7 @@ if __name__ == "__main__":
     model_knn = knn.knn(dataset, arg7, arg8, manhattan=(arg9))
     model_rdmForest = rForest.randomForest(dataset, arg10, arg11, arg12, arg13, arg14)
     model_gradBoost = gradientB.gradientBoosting(dataset, arg15, arg16, arg17)
-    model_lda = lda.LinearDiscriminantAnalysis(dataset)
+    model_lda = lda.LDA(dataset, arg18, arg19)
 
     if arg5 == 1:  # Cross validation
         if(dataset.Kcross):  # dataset kcross
