@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class randomForest():
-    def __init__(self, dataHandler, nb_trees=350, max_depth=50, min_sample=2, random_state=50, max_features=25, criterion="gini", proportion=0.2):
+    def __init__(self, dataHandler, nb_trees=350, max_depth=50, min_sample=2, max_features=25, criterion=0, proportion=0.2):
         """
         Create an instance of the class
 
@@ -22,8 +22,8 @@ class randomForest():
             The dataset with everything loaded from the main
         nb_trees : int
             The number of trees in the forest, 10 < x < 1000
-        criterion : {"gini", "entropy"}, optional
-            The number of trees in the forest. Default = "Gini"
+        criterion : {0="gini", 1="entropy"}, optional
+            The number of trees in the forest. Default = 0 ("Gini")
         max_features : int, optional
             The maximum depth of the tree. Default = the number of features
         proportion : float, optional
@@ -40,16 +40,18 @@ class randomForest():
         self.proportion = proportion
         
         self.trees = nb_trees
-        self.criterion = criterion
+        if criterion:
+            self.criterion = "entropy"
+        else:
+            self.criterion = "gini"            
         self.max_features = max_features
         self.max_depth = max_depth
-        self.rdm_state = random_state
         self.min_sample = min_sample
         
         self.err_train = []
         self.err_valid = []
     
-    def recherche_hyperparametres(self, num_fold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion):        
+    def recherche_hyperparametres(self, num_fold, nb_trees, maxDepth, max_features, min_sample, criterion):        
         """
         The function is going to try every possibility of combinaison within the given lists of parameters to find the one which has the less error on the model
 
@@ -60,14 +62,12 @@ class randomForest():
         nb_trees : list[float]
             List of all numbers of trees in the forest ot try.
         maxDepth : list[float] or None
-            List of maximums depth of the tree to try. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples..
-        random_state : list[float]
-            List of values to try that controls both the randomness of the bootstrapping of the samples used when building trees
+            List of maximums depth of the tree to try. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.
         max_features : list[float]
            List of all number of features to try, to consider when looking for the best split.
         min_sample : list[float]
             List of all minimum numbers of samples to try, required to split an internal node.
-        criterion : “gini” or “entropy”
+        criterion : 0=“gini” or 1=“entropy”
             The function to measure the quality of a split.
 
         Returns
@@ -76,22 +76,22 @@ class randomForest():
 
         """
         liste_res = [] 
+        liste_crit = [] 
         liste_tree = [] 
         liste_depth = []
-        liste_state = []
         liste_feature = []
         liste_sample = []
         
         meilleur_res = 0
+        meilleur_crit = None
         meilleur_tree = None
         meilleur_depth = None
-        meilleur_state = None
         meilleur_feature = None
         meilleur_sample = None
         
-        for tree in tqdm(nb_trees):  # On teste plusieurs degrés du polynôme
-            for depth in tqdm(maxDepth):
-                for state in random_state:
+        for crit in tqdm(criterion):
+            for tree in nb_trees:  # On teste plusieurs degrés du polynôme
+                for depth in tqdm(maxDepth):
                     for feature in max_features:
                         for sample in min_sample:
                             sum_result = 0
@@ -99,9 +99,11 @@ class randomForest():
                             self.trees = tree
                             self.max_features = feature
                             self.max_depth = depth
-                            self.rdm_state = state
                             self.min_sample = sample
-                            self.criterion = criterion
+                            if criterion:
+                                self.criterion = "entropy"
+                            else:
+                                self.criterion = "gini"  
                 
                             for k in range(num_fold):  # K-fold validation
                                 X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
@@ -113,38 +115,38 @@ class randomForest():
                             avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
                             
                             liste_res.append(avg_res_locale)  
+                            liste_crit.append(crit)
                             liste_tree.append(tree)  
                             liste_depth.append(depth)  
-                            liste_state.append(state)  
                             liste_feature.append(feature)  
                             liste_sample.append(sample)  
                      
                             if(avg_res_locale > meilleur_res):
                                 meilleur_res = avg_res_locale
+                                meilleur_crit = crit
                                 meilleur_tree = tree
                                 meilleur_depth = depth
-                                meilleur_state = state
                                 meilleur_feature = feature
                                 meilleur_sample = sample
                                     
+        self.criterion = meilleur_crit
         self.trees = meilleur_tree
         self.max_features = meilleur_feature
         self.max_depth = meilleur_depth
-        self.rdm_state = meilleur_state
         self.min_sample = meilleur_sample
         
         plt.plot(liste_res)  
         plt.title("Random Forest : Bonne réponse moyenne sur les K-fold validations")  
         plt.show()  
+        plt.plot(liste_crit) 
+        plt.title("Random Forest : Critère 0=gini, 1=entropie")  
+        plt.show()   
         plt.plot(liste_tree)  
         plt.title("Random Forest : Nombre d'arbre dans la forêt")  
         plt.show()  
         plt.plot(liste_depth)  
         plt.title("Random Forest : Profondeur des arbres")  
-        plt.show()  
-        plt.plot(liste_state)  
-        plt.title("Random Forest : Nombre qui contrôle le boostrapping pour la construction d'arbre")  
-        plt.show()  
+        plt.show()   
         plt.plot(liste_feature)  
         plt.title("Random Forest : Nombre de caractéristiques nécéssaire pour séparer les données")  
         plt.show()  
@@ -155,7 +157,6 @@ class randomForest():
         print("trees = " + str(meilleur_tree))
         print("max_features = " + str(meilleur_feature))
         print("meilleur_depth = " + str(meilleur_depth))
-        print("meilleur_state = " + str(meilleur_state))
         print("meilleur_sample = " + str(meilleur_sample))
         
     def entrainement(self, xData, yData):

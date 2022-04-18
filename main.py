@@ -89,7 +89,7 @@ def Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost):
     random_state = [50]
     max_features = [25]
     min_sample = [2]
-    criterion = "gini"
+    criterion = ["gini", "entropy"]
     model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
     
     """
@@ -138,8 +138,8 @@ if __name__ == "__main__":
     arg10 = 350 # Number of threes in the random forest 50
     arg11 = 50 # maximum depth of the trees 10
     arg12 = 2 # Number of minimum samples to create a new node 2
-    arg13 = 10 # Controls both the randomness of the bootstrapping of the samples used when building trees 10
-    arg14 = 1 #The number of features to consider when looking for the best split 1
+    arg13 = 1 # The number of features to consider when looking for the best split 1
+    arg14 = "gini" # The function to measure the quality of a split {"gini", "entropy"}
 
     # Gradient Boosting
     arg15 = 0.1  # learning rate
@@ -171,7 +171,6 @@ if __name__ == "__main__":
         print("\t Number of threes in the random forest. [10,1000], integer")
         print("\t Maximum depth of the tress. Minimum 1, integer")
         print("\t Number of minimum samples to create a new node. Minimum 1, integer")
-        print("\t Controls both the randomness of the bootstrapping of the samples used when building trees (if bootstrap=True) and the sampling of the features to consider when looking for the best split at each node (if max_features < n_features). Minimum 1, integer")
         print("\t The number of features to consider when looking for the best split. Minimum 1, integer")
         
         
