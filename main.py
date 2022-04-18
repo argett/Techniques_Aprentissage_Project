@@ -78,25 +78,28 @@ def processResult(allLists):
     
 def Kcross_validation(kFold, model, model_knn, model_rdmForest, model_gradBoost):
     if model == "knn":
-        #ks = [3,5,8,10,15,20,30,50,100] 
-        #ls = [2,5,10,25,64,99] 
-        #dist = [0,1]
-        print("ligne84")
         model_knn.recherche_hyperparametres(kFold)  
+        plt.plot(model_knn.err_train, label='Score train')
+        plt.plot(model_knn.err_valid, label='Score valid')
+        plt.legend()
+        plt.title("KNN : Bonne réponse moyenne sur K-fold validation")
+        plt.show()
         
     elif model == "rforest":
-        #nb_trees = [50,200,350,800]
-        #maxDepth = [5,10,16,25,32,50,100]
-        #max_features = [1,32,64,128]
-        #min_sample = [2,5,10]
-        #criterion = ["gini", "entropy"]
         model_rdmForest.recherche_hyperparametres(kFold)
+        plt.plot(model_rdmForest.err_train, label='Score train')
+        plt.plot(model_rdmForest.err_valid, label='Score valid')
+        plt.legend()
+        plt.title("Random Forest : Bonne réponse moyenne sur K-fold validation")
+        plt.show()
 
     elif model == "gboost":
-        #lr = [0.01, 0.05, 0.1, 0.5]
-        #estimator = [10,100,400,600]
-        #sample = [2,5,50]
         model_gradBoost.recherche_hyperparametres(kFold) 
+        plt.plot(model_gradBoost.err_train, label='Score train')
+        plt.plot(model_gradBoost.err_valid, label='Score valid')
+        plt.legend()
+        plt.title("Gradient Boosting : Bonne réponse moyenne sur K-fold validation avec distance de Manhattan")
+        plt.show()
     
 def train_test(model_knn, model_rdmForest, model_gradBoost, dataset, model):
     if model == "knn":
@@ -127,17 +130,19 @@ def errorParameters(message):
          \n\t\t 1 = select all data, 0.85 = do not take every caracteristic where 85% of the data is in the 10% range of the total range")
     print("\t 4) Number of K for Train/Test split kcross-validation. min 3 or -1 for no kcross validation, int")
     print("\t 5) Allow the hyperparameter research (0 or 1): 0 = take the default or selected values, 1 = apply the hyperparameter research")
-    print("\t 5bis -only if you allowed the hyperparameter research-) Number of K in the kcross validation: [1,10] (10 can be long to compute for gradient boosting for example), integer")
+    print("\t 5bis) ! Only if you allowed the hyperparameter research ! Number of K in the kcross validation: [1,10] (10 can be long to compute for gradient boosting for example), integer")
          
     print("\n\nThe following is going to depend on the type of model you want :")
     
     print("\n\t\t --- KNN model ---")
+    print("\t 6) knn")
     print("\t 7) Number of neighbour for KNN: The number of neighbour in the KNN-calssifyer. Minimum 1, integer")
     print("\t 8) Leaf size passed to BallTree or KDTree. This can affect the speed of the construction and query, as well as the memory required to store the tree. The optimal value depends on the nature of the problem. Minimum 1, integer")
     print("\t 9) To use the Manhattan distance or Euclidean. 1 = Manhattan, 0 = Euclidean, integer")
 
     
     print("\n\t\t --- Random Forest model ---")
+    print("\t 6) rforest")
     print("\t 7) Number of threes in the random forest. [10,1000], integer")
     print("\t 8) Maximum depth of the tress. Minimum 1, integer")
     print("\t 9) Number of minimum samples to create a new node. Minimum 1, integer")
@@ -146,6 +151,7 @@ def errorParameters(message):
     
     
     print("\n\t\t --- Gradient Boosting model ---")
+    print("\t 6) gboost")
     print("\t 7) Learning rate. [0.0001,1], float")
     print("\t 8) The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance. [10,1000], integer")
     print("\t 9) The minimum number of samples required to split an internal node. [1,98], integer")
@@ -236,50 +242,50 @@ if __name__ == "__main__":
             if paramSize == 7:
                 model_rdmForest = rForest.randomForest(dataset)
             else:
-                if paramSize != (12 + add) or (str(sys.argv[14 + add]) != ("gini" or "entropy")):
-                    errorParameters("<!> Not the correct number of for the model <!>")
+                if paramSize != (12 + add):
+                    errorParameters("<!> Not the correct number of parameters for the model <!>")
                     
                 if arg5 :
                     # hyperparameters research
-                    arg11 = int(sys.argv[10 + add])  # Number of threes in the random forest
-                    arg12 = int(sys.argv[11 + add])  # Maximum depth of the trees
-                    arg13 = int(sys.argv[12 + add])  # Number of minimum samples to create a new node
-                    arg14 = int(sys.argv[13 + add])  # The number of features to consider when looking for the best split 1
-                    arg15 = str(sys.argv[14 + add])  # The function to measure the quality of a split {"gini", "entropy"}
+                    arg11 = str(sys.argv[7 + add])  # Number of threes in the random forest
+                    arg12 = str(sys.argv[8 + add])  # Maximum depth of the trees
+                    arg13 = str(sys.argv[9 + add])  # Number of minimum samples to create a new node
+                    arg14 = str(sys.argv[10 + add])  # The number of features to consider when looking for the best split 1
+                    arg15 = str(sys.argv[11 + add])  # The function to measure the quality of a split {"gini", "entropy"}
                     # transform command line into iterrable lists
                     arg11 = list(map(int, list(arg11.split("/"))))
                     arg12 = list(map(int, list(arg12.split("/"))))
                     arg13 = list(map(int, list(arg13.split("/"))))
                     arg14 = list(map(int, list(arg14.split("/"))))
-                    arg15 = list(map(str, list(arg15.split("/"))))                    
+                    arg15 = list(map(str, list(arg15.split("/"))))
                 else:
-                    arg11 = int(sys.argv[10 + add])  # Number of threes in the random forest
-                    arg12 = int(sys.argv[11 + add])  # Maximum depth of the trees
-                    arg13 = int(sys.argv[12 + add])  # Number of minimum samples to create a new node
-                    arg14 = int(sys.argv[13 + add])  # The number of features to consider when looking for the best split 1
-                    arg15 = str(sys.argv[14 + add])  # The function to measure the quality of a split {"gini", "entropy"}
-                    model_rdmForest = rForest.randomForest(dataset, arg11, arg12, arg13, arg14, arg15)
+                    arg11 = int(sys.argv[7 + add])  # Number of threes in the random forest
+                    arg12 = int(sys.argv[8 + add])  # Maximum depth of the trees
+                    arg13 = int(sys.argv[9 + add])  # Number of minimum samples to create a new node
+                    arg14 = int(sys.argv[10 + add])  # The number of features to consider when looking for the best split 1
+                    arg15 = str(sys.argv[11 + add])  # The function to measure the quality of a split {"gini", "entropy"}
+                model_rdmForest = rForest.randomForest(dataset, arg11, arg12, arg13, arg14, arg15)
         
         elif arg7 == "gboost":
             if paramSize == 7:
                 model_gradBoost = gradientB.gradientBoosting(dataset) 
             else:
                 if paramSize != (10 + add):
-                    errorParameters("<!> Not the correct number of for the model <!>")
+                    errorParameters("<!> Not the correct number of parameters for the model <!>")
                 if arg5:
                     # hyperparameters research
-                    arg16 = int(sys.argv[15 + add])  # Learning rate
-                    arg17 = int(sys.argv[16 + add])  # Number of estimator
-                    arg18 = int(sys.argv[17 + add])  # Minimum number of sample to create a new node
+                    arg16 = str(sys.argv[7 + add])  # Learning rate
+                    arg17 = str(sys.argv[8 + add])  # Number of estimator
+                    arg18 = str(sys.argv[9 + add])  # Minimum number of sample to create a new node
                     # transform command line into iterrable lists                    
                     arg16 = list(map(int, list(arg16.split("/"))))
                     arg17 = list(map(int, list(arg17.split("/"))))
                     arg18 = list(map(int, list(arg18.split("/"))))
                 else:
-                    arg16 = int(sys.argv[15 + add])  # Learning rate
-                    arg17 = int(sys.argv[16 + add])  # Number of estimator
-                    arg18 = int(sys.argv[17 + add])  # Minimum number of sample to create a new node
-                    model_gradBoost = gradientB.gradientBoosting(dataset, arg16, arg17, arg18) 
+                    arg16 = int(sys.argv[7 + add])  # Learning rate
+                    arg17 = int(sys.argv[8 + add])  # Number of estimator
+                    arg18 = int(sys.argv[9 + add])  # Minimum number of sample to create a new node
+                model_gradBoost = gradientB.gradientBoosting(dataset, arg16, arg17, arg18) 
         
         elif arg7 == "algo4":
             if len(sys.argv) == 6:
@@ -317,15 +323,7 @@ if __name__ == "__main__":
                 Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost)
         else:
             Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost)
-        
-    """ 
-    plt.plot(model_knn.err_train, label='Score train')
-    plt.plot(model_knn.err_valid, label='Score valid')
-    plt.legend()
-    plt.title("KNN : Bonne réponse moyenne sur K-fold validation avec distance de Manhattan")
-    plt.show()
-    """
-    
+
     if(dataset.Kcross):
         for ki in tqdm(range(dataset.split)):
             print("\n================= Tests kcross de dataset split pour entrainement = " + str(ki) + " =================\n")

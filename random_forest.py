@@ -98,6 +98,7 @@ class randomForest():
                         for sample in min_sample:
                             sum_result = 0
                             
+                            self.criterion = crit
                             self.trees = tree
                             self.max_features = feature
                             self.max_depth = depth

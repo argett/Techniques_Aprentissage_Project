@@ -116,7 +116,8 @@ class Dataset:
             if (not tr_columnName == 'id') and (not tr_columnName == 'species'): # TODO : on peux optimiser ?
                 self.center_reduce(tr_columnName, tr_columnData)
                 self.normalize(tr_columnName, tr_columnData)
-                self.troncate(tr_columnName)
+                # useless
+                # self.troncate(tr_columnName)
 
     def normalize(self, colName, colData):
         """
