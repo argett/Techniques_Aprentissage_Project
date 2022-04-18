@@ -77,26 +77,25 @@ def processResult(allLists):
     
 def Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost):
     kFold = arg6
-    
+      
     # KNN
-    ks = [3] 
-    ls = [2] 
-    model_knn.recherche_hyperparametres(kFold, ks, ls)  
-    
-    # Random Forest
-    nb_trees = [350]
-    maxDepth = [50]
-    random_state = [50]
-    max_features = [25]
-    min_sample = [2]
-    criterion = ["gini", "entropy"]
-    model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, random_state, max_features, min_sample, criterion)
-    
+    ks = [3,5,8,10,15,20,30,50,100] 
+    ls = [2,5,10,25,64,99] 
+    dist = [1]#[0,1]
+    model_knn.recherche_hyperparametres(kFold, ks, ls, dist)  
     """
+    # Random Forest
+    nb_trees = [50,200,350,800]
+    maxDepth = [5,10,16,25,32,50,100]
+    max_features = [1,32,64,128]
+    min_sample = [2,5,10]
+    criterion = ["gini", "entropy"]
+    model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, max_features, min_sample, criterion)
+
     # Gradient Boosting
-    lr = [0.1]
-    estimator = [400]
-    sample = [2]
+    lr = [0.01, 0.05, 0.1, 0.5]
+    estimator = [10,100,400,600]
+    sample = [2,5,50]
     model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
     """
     
@@ -136,7 +135,7 @@ if __name__ == "__main__":
     
     # random forest parameters
     arg10 = 350 # Number of threes in the random forest 50
-    arg11 = 50 # maximum depth of the trees 10
+    arg11 = 25 # maximum depth of the trees 10
     arg12 = 2 # Number of minimum samples to create a new node 2
     arg13 = 1 # The number of features to consider when looking for the best split 1
     arg14 = "gini" # The function to measure the quality of a split {"gini", "entropy"}

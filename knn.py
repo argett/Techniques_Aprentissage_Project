@@ -47,7 +47,7 @@ class knn():
         self.err_train = []
         self.err_valid = []
 
-    def recherche_hyperparametres(self, num_fold, number_cluster, leaf):
+    def recherche_hyperparametres(self, num_fold, number_cluster, leaf, distance):
         """
         The function is going to try every possibility of combinaison within the given lists of parameters to find the one which has the less error on the model.
 
@@ -66,43 +66,53 @@ class knn():
 
         """
         liste_res = [] 
+        liste_dist = [] 
         liste_k = [] 
         liste_leaf = [] 
         
         meilleur_res = 0
+        meilleur_dist = None
         meilleur_k = None 
         meilleur_leaf = None 
          
-        for k in tqdm(number_cluster):  # On teste plusieurs degrés du polynôme 
-            for ls in leaf:
-                sum_result = 0 
-                 
-                self.nb_neighbour = k
-                self.leaf_size = ls
-     
-                for ki in range(num_fold):  # K-fold validation 
-                    X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=ki, shuffle=True) 
-                    self.entrainement(X_learn, y_learn)
-                    self.err_valid.append(self.score(X_verify, y_verify))
-                    #print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
-                    sum_result += self.err_valid[-1]
-                     
-                avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold   
-                
-                liste_res.append(avg_res_locale) 
-                liste_k.append(k) 
-                liste_leaf.append(ls) 
+        for dis in distance:
+            for k in tqdm(number_cluster):  # On teste plusieurs degrés du polynôme 
+                for ls in leaf:
+                    sum_result = 0 
+
+                    self.manhattan = dis
+                    self.nb_neighbour = k
+                    self.leaf_size = ls
+
+                    for ki in range(num_fold):  # K-fold validation 
+                        X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=ki, shuffle=True) 
+                        self.entrainement(X_learn, y_learn)
+                        self.err_valid.append(self.score(X_verify, y_verify))
+                        #print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
+                        sum_result += self.err_valid[-1]
+                         
+                    avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold   
                     
-                if(avg_res_locale > meilleur_res): 
-                    meilleur_res = avg_res_locale 
-                    meilleur_k = k
-                    meilleur_leaf = ls
+                    liste_res.append(avg_res_locale) 
+                    liste_dist.append(dis) 
+                    liste_k.append(k) 
+                    liste_leaf.append(ls) 
+                        
+                    if(avg_res_locale > meilleur_res): 
+                        meilleur_res = avg_res_locale 
+                        meilleur_dist = dis
+                        meilleur_k = k
+                        meilleur_leaf = ls
                 
+        self.manhattan = meilleur_dist
         self.nb_neighbour = meilleur_k
         self.leaf_size = meilleur_leaf
         
         plt.plot(liste_res) 
         plt.title("KNN : Bonne réponse moyenne sur les K-fold validations") 
+        plt.show() 
+        plt.plot(liste_dist) 
+        plt.title("KNN : Distance (0=euclidienne, 1=manhattan)") 
         plt.show() 
         plt.plot(liste_k) 
         plt.title("KNN : Nombre de voisins ou K") 
