@@ -155,11 +155,12 @@ class randomForest():
         plt.title("Random Forest : Nombre d'éléments minnimum pour pouvoir passer d'une feuille à un noeud")  
         plt.show()  
         
-        print("criterion = " + str(meilleur_crit))
-        print("trees = " + str(meilleur_tree))
-        print("max_features = " + str(meilleur_feature))
-        print("meilleur_depth = " + str(meilleur_depth))
-        print("meilleur_sample = " + str(meilleur_sample))
+        print("\nLes meilleurs parametres parmis ceux essayes sont :")
+        print("\tMeilleur critère = " + str(meilleur_crit))
+        print("\tMeilleur nombre d'abres = " + str(meilleur_tree))
+        print("\tMeilleu nombre de feature max = " + str(meilleur_feature))
+        print("\tMeilleure pronfondeure = " + str(meilleur_depth))
+        print("\tMeilleur sample = " + str(meilleur_sample))
         
     def entrainement(self, xData, yData):
         """

@@ -124,10 +124,11 @@ class gradientBoosting():
         plt.plot(liste_sam)
         plt.title("Gradient boosting : Valeurs du nombre de sample")
         plt.show()
-          
-        print("meilleur_lr = " + str(meilleur_lr)) 
-        print("meilleur_estimantor = " + str(meilleur_estimantor)) 
-        print("meilleur_sample = " + str(meilleur_sample)) 
+        
+        print("\nLes meilleurs parametres parmis ceux essayes sont :")
+        print("\tMeilleur learning rate = " + str(meilleur_lr)) 
+        print("\tMeilleur nombre d'estimators = " + str(meilleur_estimantor)) 
+        print("\tMeilleur sample= " + str(meilleur_sample)) 
      
     def entrainement(self, xData, yData): 
         """

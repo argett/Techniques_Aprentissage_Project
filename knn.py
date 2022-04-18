@@ -124,7 +124,10 @@ class knn():
         plt.plot(liste_leaf) 
         plt.title("KNN : Valeurs de la taille des feuilles") 
         plt.show() 
-        print("meilleur nombre de voisins = " + str(meilleur_k) + " et meilleur taille de feuille = " + str(meilleur_leaf) + " et meilleure distance = " + str(meilleur_dist) + " (0=euclidienne, 1=manhattan)")
+        print("\nLes meilleurs parametres parmis ceux essayes sont :")
+        print("\tMeilleur nombre de voisins = " + str(meilleur_k))
+        print("\tMeilleur taille de feuille = " + str(meilleur_leaf))
+        print("\tMeilleure distance (0=euclidienne, 1=manhattan)= " + str(meilleur_dist))
 
     def entrainement(self, xData, yData):
         """
