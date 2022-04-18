@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class randomForest():
-    def __init__(self, dataHandler, nb_trees=350, max_depth=50, min_sample=2, max_features=25, criterion="gini", proportion=0.2):
+    def __init__(self, dataHandler, nb_trees=350, max_depth=25, min_sample=2, max_features=1, criterion="entropy", proportion=0.2):
         """
         Create an instance of the class
 
@@ -103,7 +103,7 @@ class randomForest():
                                 self.entrainement(X_learn, y_learn)
                                 self.err_valid.append(self.score(X_verify, y_verify))
                                 #print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
-                                sum_result += self.err_train[-1]
+                                sum_result += self.err_valid[-1]
                                 
                             avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
                             
@@ -150,6 +150,7 @@ class randomForest():
         plt.title("Random Forest : Nombre d'éléments minnimum pour pouvoir passer d'une feuille à un noeud")  
         plt.show()  
         
+        print("criterion = " + str(meilleur_crit))
         print("trees = " + str(meilleur_tree))
         print("max_features = " + str(meilleur_feature))
         print("meilleur_depth = " + str(meilleur_depth))

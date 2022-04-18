@@ -89,7 +89,7 @@ class gradientBoosting():
                         self.entrainement(X_learn, y_learn)
                         self.err_valid.append(self.score(X_verify, y_verify))
                         #print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
-                        sum_result += self.err_train[-1]
+                        sum_result += self.err_valid[-1]
                          
                     avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold 
                     
