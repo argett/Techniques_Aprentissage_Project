@@ -43,11 +43,8 @@ class Dataset:
         """
         self.images = []
         self.split = train_split
-        self.train = pd.read_csv(str(path + 'train.csv'))
-        self.unknownData = pd.read_csv(str(path + 'test.csv'))
-        
-        for i in range(1,1585):
-            self.images.append(mpimg.imread(str("Data/images/" + str(i) + ".jpg")))        
+        self.train = pd.read_csv(str(path + '/train.csv'))
+        self.unknownData = pd.read_csv(str(path + '/test.csv'))    
         
         # preprocessing
         self.preprocess()
