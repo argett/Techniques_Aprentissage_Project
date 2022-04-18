@@ -46,7 +46,7 @@ class gradientBoosting():
         self.err_train = []
         self.err_valid = []
         
-    def recherche_hyperparametres(self, num_fold, learning_rate, n_estimators, min_samples_split): 
+    def recherche_hyperparametres(self, num_fold): 
         """
         The function is going to try every possibility of combinaison within the given lists of parameters to find the one which has the less error on the model.
 
@@ -65,6 +65,10 @@ class gradientBoosting():
         -------
         None.
         """
+        learning_rate = self.learning_rate
+        n_estimators = self.estimators
+        min_samples_split = self.min_sample
+        
         liste_res = []
         liste_lr = []
         liste_est = []

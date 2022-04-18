@@ -76,29 +76,27 @@ def processResult(allLists):
     for i in range(nbList):
         print("La liste " + str(i) + " a " + str(list_compare[i]) + " / " + str(len(allLists[0])) + " résultats qui sont comme la réponse la plus fréquente")
     
-def Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost):
-    kFold = arg6
-      
-    # KNN
-    ks = [3,5,8,10,15,20,30,50,100] 
-    ls = [2,5,10,25,64,99] 
-    dist = [0,1]
-    model_knn.recherche_hyperparametres(kFold, ks, ls, dist)  
-    """
-    # Random Forest
-    nb_trees = [50,200,350,800]
-    maxDepth = [5,10,16,25,32,50,100]
-    max_features = [1,32,64,128]
-    min_sample = [2,5,10]
-    criterion = ["gini", "entropy"]
-    model_rdmForest.recherche_hyperparametres(kFold, nb_trees, maxDepth, max_features, min_sample, criterion)
+def Kcross_validation(kFold, model, model_knn, model_rdmForest, model_gradBoost):
+    if model == "knn":
+        #ks = [3,5,8,10,15,20,30,50,100] 
+        #ls = [2,5,10,25,64,99] 
+        #dist = [0,1]
+        print("ligne84")
+        model_knn.recherche_hyperparametres(kFold)  
+        
+    elif model == "rforest":
+        #nb_trees = [50,200,350,800]
+        #maxDepth = [5,10,16,25,32,50,100]
+        #max_features = [1,32,64,128]
+        #min_sample = [2,5,10]
+        #criterion = ["gini", "entropy"]
+        model_rdmForest.recherche_hyperparametres(kFold)
 
-    # Gradient Boosting
-    lr = [0.01, 0.05, 0.1, 0.5]
-    estimator = [10,100,400,600]
-    sample = [2,5,50]
-    model_gradBoost.recherche_hyperparametres(kFold, lr, estimator, sample) 
-    """
+    elif model == "gboost":
+        #lr = [0.01, 0.05, 0.1, 0.5]
+        #estimator = [10,100,400,600]
+        #sample = [2,5,50]
+        model_gradBoost.recherche_hyperparametres(kFold) 
     
 def train_test(model_knn, model_rdmForest, model_gradBoost, dataset, model):
     if model == "knn":
@@ -129,7 +127,7 @@ def errorParameters(message):
          \n\t\t 1 = select all data, 0.85 = do not take every caracteristic where 85% of the data is in the 10% range of the total range")
     print("\t 4) Number of K for Train/Test split kcross-validation. min 3 or -1 for no kcross validation, int")
     print("\t 5) Allow the hyperparameter research (0 or 1): 0 = take the default or selected values, 1 = apply the hyperparameter research")
-    print("\t 6 -only if you allowed the hyperparameter research-) Number of K in the kcross validation: [1,10] (10 can be long to compute for gradient boosting for example), integer")
+    print("\t 5bis -only if you allowed the hyperparameter research-) Number of K in the kcross validation: [1,10] (10 can be long to compute for gradient boosting for example), integer")
          
     print("\n\nThe following is going to depend on the type of model you want :")
     
@@ -189,7 +187,8 @@ if __name__ == "__main__":
     model_knn = None
     model_rdmForest = None
     model_gradBoost = None
-    
+    arg1 = arg2 = arg3 = arg4 = arg5 = arg6 = arg7 = arg8 = arg9 = arg10 = None
+    arg11 = arg12 = arg13 = arg14 = arg15 = arg16 = arg17 = arg18 = arg19 = None
     add = 0
     paramSize = len(sys.argv)
     
@@ -217,11 +216,21 @@ if __name__ == "__main__":
             else:
                 if paramSize != (10 + add):
                     errorParameters("<!> Not the correct number of parameters for the model <!>")
+                    
+                if arg5 :
+                    # hyperparameters research
+                    arg8 = str(sys.argv[7 + add])  # Number of K in KNN algorithm
+                    arg9 = str(sys.argv[8 + add])  # Number of leaf size
+                    arg10 = str(sys.argv[9 + add])  # 1=Using manhattan distance, 0=euclidean distance
+                    # transform command line into iterrable lists
+                    arg8 = list(map(int, list(arg8.split("/"))))
+                    arg9 = list(map(int, list(arg9.split("/"))))
+                    arg10 = list(map(bool, list(arg10.split("/"))))
                 else:
                     arg8 = int(sys.argv[7 + add])  # Number of K in KNN algorithm
                     arg9 = int(sys.argv[8 + add])  # Number of leaf size
                     arg10 = bool(sys.argv[9 + add])  # 1=Using manhattan distance, 0=euclidean distance
-                    model_knn = knn.knn(dataset, arg8, arg9, manhattan=(arg10))
+                model_knn = knn.knn(dataset, arg8, arg9, manhattan=(arg10))
         
         elif arg7 == "rforest":
             if paramSize == 7:
@@ -229,6 +238,20 @@ if __name__ == "__main__":
             else:
                 if paramSize != (12 + add) or (str(sys.argv[14 + add]) != ("gini" or "entropy")):
                     errorParameters("<!> Not the correct number of for the model <!>")
+                    
+                if arg5 :
+                    # hyperparameters research
+                    arg11 = int(sys.argv[10 + add])  # Number of threes in the random forest
+                    arg12 = int(sys.argv[11 + add])  # Maximum depth of the trees
+                    arg13 = int(sys.argv[12 + add])  # Number of minimum samples to create a new node
+                    arg14 = int(sys.argv[13 + add])  # The number of features to consider when looking for the best split 1
+                    arg15 = str(sys.argv[14 + add])  # The function to measure the quality of a split {"gini", "entropy"}
+                    # transform command line into iterrable lists
+                    arg11 = list(map(int, list(arg11.split("/"))))
+                    arg12 = list(map(int, list(arg12.split("/"))))
+                    arg13 = list(map(int, list(arg13.split("/"))))
+                    arg14 = list(map(int, list(arg14.split("/"))))
+                    arg15 = list(map(str, list(arg15.split("/"))))                    
                 else:
                     arg11 = int(sys.argv[10 + add])  # Number of threes in the random forest
                     arg12 = int(sys.argv[11 + add])  # Maximum depth of the trees
@@ -243,6 +266,15 @@ if __name__ == "__main__":
             else:
                 if paramSize != (10 + add):
                     errorParameters("<!> Not the correct number of for the model <!>")
+                if arg5:
+                    # hyperparameters research
+                    arg16 = int(sys.argv[15 + add])  # Learning rate
+                    arg17 = int(sys.argv[16 + add])  # Number of estimator
+                    arg18 = int(sys.argv[17 + add])  # Minimum number of sample to create a new node
+                    # transform command line into iterrable lists                    
+                    arg16 = list(map(int, list(arg16.split("/"))))
+                    arg17 = list(map(int, list(arg17.split("/"))))
+                    arg18 = list(map(int, list(arg18.split("/"))))
                 else:
                     arg16 = int(sys.argv[15 + add])  # Learning rate
                     arg17 = int(sys.argv[16 + add])  # Number of estimator
@@ -282,9 +314,9 @@ if __name__ == "__main__":
             for ki in range(dataset.split):
                 print("================= Recherche hyperparamètres, kcross de dataset split = " + str(ki) + " =================")
                 dataset.split_data(ki)
-                Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost)
+                Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost)
         else:
-            Kcross_validation(arg6, model_knn, model_rdmForest, model_gradBoost)
+            Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost)
         
     """ 
     plt.plot(model_knn.err_train, label='Score train')

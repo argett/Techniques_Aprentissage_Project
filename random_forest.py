@@ -32,7 +32,6 @@ class randomForest():
         Returns
         -------
         None.
-
         """
         self.randomForest = None
         self.dh = dataHandler
@@ -48,7 +47,7 @@ class randomForest():
         self.err_train = []
         self.err_valid = []
     
-    def recherche_hyperparametres(self, num_fold, nb_trees, maxDepth, max_features, min_sample, criterion):   
+    def recherche_hyperparametres(self, num_fold):   
         """
         The function is going to try every possibility of combinaison within the given lists of parameters to find the one which has the less error on the model
 
@@ -70,8 +69,13 @@ class randomForest():
         Returns
         -------
         None.
-
         """
+        nb_trees = self.trees
+        maxDepth = self.max_depth
+        max_features = self.max_features
+        min_sample = self.min_sample
+        criterion = self.criterion
+        
         liste_res = [] 
         liste_crit = [] 
         liste_tree = [] 

@@ -47,7 +47,7 @@ class knn():
         self.err_train = []
         self.err_valid = []
 
-    def recherche_hyperparametres(self, num_fold, number_cluster, leaf, distance):
+    def recherche_hyperparametres(self, num_fold):
         """
         The function is going to try every possibility of combinaison within the given lists of parameters to find the one which has the less error on the model.
 
@@ -65,6 +65,10 @@ class knn():
         None.
 
         """
+        distance = self.distance_method
+        number_cluster = self.nb_neighbour
+        leaf = self.leaf_size
+        
         liste_res = [] 
         liste_dist = [] 
         liste_k = [] 
@@ -80,7 +84,7 @@ class knn():
                 for ls in leaf:
                     sum_result = 0 
 
-                    self.manhattan = dis
+                    self.distance_method = dis
                     self.nb_neighbour = k
                     self.leaf_size = ls
 
@@ -104,7 +108,7 @@ class knn():
                         meilleur_k = k
                         meilleur_leaf = ls
                 
-        self.manhattan = meilleur_dist
+        self.distance_method = meilleur_dist
         self.nb_neighbour = meilleur_k
         self.leaf_size = meilleur_leaf
         
@@ -120,7 +124,7 @@ class knn():
         plt.plot(liste_leaf) 
         plt.title("KNN : Valeurs de la taille des feuilles") 
         plt.show() 
-        print("meilleur_k = " + str(meilleur_k) + " et meilleur leaf_size = " + str(meilleur_leaf))
+        print("meilleur nombre de voisins = " + str(meilleur_k) + " et meilleur taille de feuille = " + str(meilleur_leaf) + " et meilleure distance = " + str(meilleur_dist) + " (0=euclidienne, 1=manhattan)")
 
     def entrainement(self, xData, yData):
         """
