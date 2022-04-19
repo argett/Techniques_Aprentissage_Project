@@ -9,12 +9,7 @@ Created on Tue Feb  1 17:44:11 2022
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 from matplotlib.ticker import PercentFormatter
-
-# Pour traiter les données manquantes
-from sklearn.impute import SimpleImputer
-
 # Pour encoder des données catégorielles
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder 
 
@@ -50,11 +45,9 @@ class Dataset:
         self.preprocess()
         to_delete = self.selectData(display, selected_data)
         self.feature_selection(to_delete)
-        
-        
-        # because train only as the specie's name and we need a verify, we must split the train dataset
+
+        # because train only has the specie's name and we need a verify, we must split the train dataset
         # and to get a diversified dataset at each program run, we randomly shuffle it
-        #shuffle all rows of DataFrame
         self.train = self.train.sample(frac=1)
         
         if train_split == -1:
@@ -71,38 +64,9 @@ class Dataset:
             for i in range(train_split):
                 self.cells.append(self.train.iloc[int(self.train.shape[0]*i/train_split):int(self.train.shape[0]*(i+1)/train_split)])
             
-            # on reset les dataset car ils vont être initialisé correctement par la suite
+            # We reset the datasets because they are going to be well initialized after
             self.train = pd.DataFrame()
             self.test = pd.DataFrame()
-        
-        #self.train = self.handling_missing(self.train, 2, self.train.shape[1])
-        #self.test = self.handling_missing(self.test, 2, self.test.shape[1])
-        
-    
-    def handling_missing(self, df, i, j): 
-        """
-        Regarde dans le dataframe donné s'il y a des NaN pour changer par 0
-
-        Parameters
-        ----------
-        df : Dataframe
-            Le dataframe que l'on souhaite corriger
-        i : int
-            Valeur de la colonne du début où commence la vérification
-        j : int
-            Valaur de la colonne de fin où fini la vérification
-
-        Returns
-        -------
-        data : Dataframe
-            Le Dataframe corrigé
-        """
-        
-        imputer = SimpleImputer(missing_values=np.nan, strategy='constant', fill_value=0)
-        data = df.iloc[:, i:j]
-        imputer.fit(data)
-        data = imputer.transform(data)
-        return data
 
     def preprocess(self):
         """
@@ -133,7 +97,6 @@ class Dataset:
         Returns
         -------
         None.
-
         """
         _min = 0
         _max = 0
@@ -175,7 +138,6 @@ class Dataset:
         Returns
         -------
         None.
-
         """
         mean = np.mean(colData)
         std = np.std(colData)
@@ -199,9 +161,8 @@ class Dataset:
         Returns
         -------
         None.
-
         """
-        # TODO : mettre le 5 en valeur saisissable par l'utilisateur
+        # TODO : mettre le 5 en valeur saisissable par l'utilisateur si cette fontion est pertinente
         self.train[colName] = self.train[colName].round(5)
         self.unknownData[colName] = self.unknownData[colName].round(5)
         
@@ -218,7 +179,6 @@ class Dataset:
         Returns
         -------
         None.
-
         """
         if not to_delete: # lists are considered as bool if empty
             pass
@@ -241,7 +201,6 @@ class Dataset:
         -------
         to_delete : list[string]
             List of string containing the names of the columns to be deleted.
-
         """
         to_delete = []
         if display :
@@ -261,6 +220,7 @@ class Dataset:
                     
                     plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
                     plt.title(columnName)
+                    
                 elif "shape" in columnName:
                     i += 1
                     plt.subplot(8, 8, i) 
@@ -274,6 +234,7 @@ class Dataset:
                         
                     plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
                     plt.title(columnName)
+                    
                 elif "texture" in columnName:
                     i += 1
                     plt.subplot(8, 8, i) 
@@ -293,6 +254,7 @@ class Dataset:
                     plt.show()
                     plt.subplots(figsize=(12, 12))
                     i = 0
+                    
         else:
             ignore=2 # to ignore the 2 first columns (id and species)
             for (columnName, columnData) in self.train.iteritems():

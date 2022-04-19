@@ -47,35 +47,8 @@ import knn as knn
 import gradient_boosting as gradientB
 import numpy as np
 import sys
-  
-def processResult(allLists):
-    nbList = len(allLists)
-    if(nbList <= 1):
-        print("No enought models to compare the results")
-        return
-    
-    list_compare = np.zeros(nbList, dtype=int)
-    for i in range(len(allLists[0])):        
-        classes = []
-        for j in range(nbList):
-            classes.append(allLists[j][i])
-            
-        mostCommon_label = max(classes,key=classes.count)
-        
-        for j in range(nbList):
-            if allLists[j][i] == mostCommon_label:
-                list_compare[j] += 1   
-    
-    """
-    plot illissible
-    plt.figure(figsize=(100, 30))
-    for liste in allLists:
-        plt.plot(liste)
-    plt.show()
-    """
-    for i in range(nbList):
-        print("La liste " + str(i) + " a " + str(list_compare[i]) + " / " + str(len(allLists[0])) + " résultats qui sont comme la réponse la plus fréquente")
-    
+
+
 def Kcross_validation(kFold, model, model_knn, model_rdmForest, model_gradBoost):
     if model == "knn":
         model_knn.recherche_hyperparametres(kFold)  
@@ -157,7 +130,9 @@ def errorParameters(message):
     print("\t 9) The minimum number of samples required to split an internal node. [1,98], integer")
     
     
-    print("\nexemple: python3 main.py ../Data 0 1 -1  0 knn\n")
+    print("\nExemple :")
+    print("\tpython3 main.py Data 0 1 -1  0 knn")
+    print("\tpython3 main.py Data 0 1 3 1 1 rforest 50/100 2/5/10 5/8/13 gini/entropy\n")
     sys.exit(message)
     
 if __name__ == "__main__":
@@ -233,11 +208,17 @@ if __name__ == "__main__":
                     arg8 = list(map(int, list(arg8.split("/"))))
                     arg9 = list(map(int, list(arg9.split("/"))))
                     arg10 = list(map(bool, list(arg10.split("/"))))
+                    
                 else:
                     arg8 = int(sys.argv[7 + add])  # Number of K in KNN algorithm
                     arg9 = int(sys.argv[8 + add])  # Number of leaf size
                     arg10 = bool(sys.argv[9 + add])  # 1=Using manhattan distance, 0=euclidean distance
+                    
                 model_knn = knn.Knn(dataset, arg8, arg9, manhattan=(arg10))
+                if arg5 :  # to not have to resst each time we make a cross validation Train/Test
+                    model_knn.addListParameters(arg8)
+                    model_knn.addListParameters(arg9)
+                    model_knn.addListParameters(arg10)
         
         elif arg7 == "rforest":
             if paramSize == 7:
@@ -265,7 +246,14 @@ if __name__ == "__main__":
                     arg13 = int(sys.argv[9 + add])  # Number of minimum samples to create a new node
                     arg14 = int(sys.argv[10 + add])  # The number of features to consider when looking for the best split 1
                     arg15 = str(sys.argv[11 + add])  # The function to measure the quality of a split {"gini", "entropy"}
+                    
                 model_rdmForest = rForest.RandomForest(dataset, arg11, arg12, arg13, arg14, arg15)
+                if arg5 :  # to not have to resst each time we make a cross validation Train/Test
+                    model_rdmForest.addListParameters(arg11)
+                    model_rdmForest.addListParameters(arg12)
+                    model_rdmForest.addListParameters(arg13)
+                    model_rdmForest.addListParameters(arg14)
+                    model_rdmForest.addListParameters(arg15)
         
         elif arg7 == "gboost":
             if paramSize == 7:
@@ -286,7 +274,12 @@ if __name__ == "__main__":
                     arg16 = int(sys.argv[7 + add])  # Learning rate
                     arg17 = int(sys.argv[8 + add])  # Number of estimator
                     arg18 = int(sys.argv[9 + add])  # Minimum number of sample to create a new node
+                    
                 model_gradBoost = gradientB.GradientBoosting(dataset, arg16, arg17, arg18) 
+                if arg5 :  # to not have to resst each time we make a cross validation Train/Test
+                    model_gradBoost.addListParameters(arg8)
+                    model_gradBoost.addListParameters(arg9)
+                    model_gradBoost.addListParameters(arg10)
         
         elif arg7 == "algo4":
             if len(sys.argv) == 6:
@@ -329,7 +322,6 @@ if __name__ == "__main__":
         for ki in tqdm(range(dataset.split)):
             print("\n================= Tests kcross de dataset split pour entrainement = " + str(ki) + " =================\n")
             dataset.split_data(ki)
-            train_test(model_knn, model_rdmForest, model_gradBoost, dataset)
+            train_test(model_knn, model_rdmForest, model_gradBoost, dataset, arg7)
     else:
         resultats = train_test(model_knn, model_rdmForest, model_gradBoost, dataset, arg7)
-        #processResult(resultats)
