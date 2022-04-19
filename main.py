@@ -173,9 +173,28 @@ def errorParameters(message):
     print("\t 8) The number of boosting stages to perform. Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance. [10,1000], integer")
     print("\t 9) The minimum number of samples required to split an internal node. [1,98], integer")
 
+    print("\n\t\t --- LDA model ---")
+    print("\t 6) lda")
+    print("\t 7) solver: \"svd\" or \"lsqr\" or \"eigen\"")
+    print("\t 8) shrinkage: [0,1], float")
+
+    print("\n\t\t --- SVC model ---")
+    print("\t 6) svc")
+    print("\t 7) kernel: \"linear\", \"poly\", \"rbf\", \"sigmoid\"")
+    print("\t 8) gamma: \"auto\" or \"scale\"")
+    print("\t 9) C: [1,100000], int")
+
+    print("\n\t\t --- NuSVC model ---")
+    print("\t 6) nusvc")
+    print("\t 7) kernel: \"linear\", \"poly\", \"rbf\", \"sigmoid\"")
+    print("\t 8) gamma: \"auto\" or \"scale\"")
+
     print("\nExemple :")
-    print("\tpython3 main.py Data 0 1 -1  0 knn")
-    print("\tpython3 main.py Data 0 1 3 1 1 rforest 50/100 2/5/10 5/8/13 gini/entropy\n")
+    print("\tpython main.py Data 0 1 -1  0 knn")
+    print("\tpython main.py Data 0 1 3 1 1 rforest 50/100 2/5/10 5/8/13 1/2 gini/entropy")
+    print("\tpython main.py Data 0 1 -1 1 5 knn 1/2/3 10/50 0")
+    print("\tpython main.py Data 0 1 3 1 5 svc 1/2/3 rbf/poly scale/auto")
+    print("\tpython main.py Data 0 1 -1 0 nusvc\n")
     sys.exit(message)
 
 
