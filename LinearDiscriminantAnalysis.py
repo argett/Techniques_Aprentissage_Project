@@ -4,18 +4,14 @@ Created on Sun Feb 13 14:54:11 2022
 
 @author: Tsiory
 """
-
+from GeneralModel import CommonModel
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-# from sklearn.utils import shuffle
 from tqdm import tqdm
-# import numpy as np
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-# from sklearn.model_selection import GridSearchCV
-# from sklearn.model_selection import ShuffleSplit
 
 
-class LDA():
+class LDA(CommonModel):
     def __init__(self, dataHandler, solver='svd', shrinkage=None, proportion=0.2):
         """
         Create an instance of the class
@@ -37,18 +33,13 @@ class LDA():
         None.
 
         """
+        CommonModel.__init__(self,dataHandler, proportion)
         self.lda = None
-        self.dh = dataHandler
-
-        self.proportion = proportion
 
         self.solver = solver
         self.shrinkage = shrinkage
 
-        self.err_train = []
-        self.err_valid = []
-
-    def recherche_hyperparametres(self, num_fold, solver, shrinkage):
+    def recherche_hyperparametres(self, num_fold):
         """
         Hyperparameter search
 
@@ -64,18 +55,16 @@ class LDA():
         Returns
         -------
         None.
-
         """
         liste_res = []
         liste_solver = []
         liste_shrinkage = []
-
-        meilleur_res = 0
+        
         meilleur_solver = None
         meilleur_shrinkage = None
 
-        for solv in tqdm(solver):
-            for sh in shrinkage:
+        for solv in tqdm(self.getListParameters(0)):
+            for sh in self.getListParameters(1):
                 sum_results = 0
 
                 self.solver = solv
@@ -93,8 +82,8 @@ class LDA():
                 liste_solver.append(solv)
                 liste_shrinkage.append(sh)
 
-                if avg_res_locale > meilleur_res:
-                    meilleur_res = avg_res_locale
+                if avg_res_locale > self.betterValidationScore:
+                    self.betterValidationScore = avg_res_locale
                     meilleur_solver = solv
                     meilleur_shrinkage = sh
 

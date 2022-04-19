@@ -40,19 +40,19 @@ pour améliorer vos résultats? Etc.
 """
 
 from tqdm import tqdm
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import Dataset as dt
 import random_forest as rForest
 import knn as knn
 import gradient_boosting as gradientB
 import numpy as np
 import LinearDiscriminantAnalysis as lda
-import NuSVC as nusvc
-import SVC as svc
+#import NuSVC as nusvc
+#import SVC as svc
 import sys
 
 
-def Kcross_validation(kFold, model, model_knn, model_rdmForest, model_gradBoost):
+def Kcross_validation(kFold, model, model_knn, model_rdmForest, model_gradBoost, model_lda):
     if model == "knn":
         model_knn.recherche_hyperparametres(kFold)  
         plt.plot(model_knn.err_train, label='Score train')
@@ -76,8 +76,16 @@ def Kcross_validation(kFold, model, model_knn, model_rdmForest, model_gradBoost)
         plt.legend()
         plt.title("Gradient Boosting : Bonne réponse moyenne sur K-fold validation avec distance de Manhattan")
         plt.show()
+        
+    elif model == "lda":
+        model_lda.recherche_hyperparametres(kFold) 
+        plt.plot(model_lda.err_train, label='Score train')
+        plt.plot(model_lda.err_valid, label='Score valid')
+        plt.legend()
+        plt.title("Gradient Boosting : Bonne réponse moyenne sur K-fold validation avec distance de Manhattan")
+        plt.show()
     
-def train_test(model_knn, model_rdmForest, model_gradBoost, dataset, model):
+def train_test(dataset, model, model_knn, model_rdmForest, model_gradBoost, model_lda):
     if model == "knn":
         model_knn.entrainement(dataset.xTrain(), dataset.yTrain())
         print("score Test = " + str(round(model_knn.score(dataset.xTest(), dataset.yTest()),4)*100) + "%, score train = " + str(round(model_knn.err_train[-1],4)*100) + "%")
@@ -93,6 +101,10 @@ def train_test(model_knn, model_rdmForest, model_gradBoost, dataset, model):
         print("score Test = " + str(round(model_gradBoost.score(dataset.xTest(), dataset.yTest()),4)*100) + "%, score train = " + str(round(model_gradBoost.err_train[-1],4)*100) + "%")
         #res3 = model_gradBoost.run()
     
+    elif model == "lda":
+        model_lda.entrainement(dataset.xTrain(), dataset.yTrain())
+        print("score Test = " + str(round(model_lda.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_lda.err_train[-1], 4)*100) + "%")
+        #res4 = model_lda.run()
     #[res1.tolist(), res2.tolist(), res3.tolist()]
     
     
@@ -138,14 +150,7 @@ def errorParameters(message):
     print("\tpython3 main.py Data 0 1 3 1 1 rforest 50/100 2/5/10 5/8/13 gini/entropy\n")
     sys.exit(message)
     
-    # Linear Discriminant Analysis
-    shrinkage = list(np.arange(0.0, 1.0, 0.01))
-    solver = ["svd", "lsqr", "eigen"]
-    model_lda.recherche_hyperparametres(kFold, solver, shrinkage)
-    print("LDA :")
-    model_lda.entrainement(dataset.xTrain(), dataset.yTrain())
-    print("score Test = " + str(round(model_lda.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_lda.err_train[-1], 4)*100) + "%")
-    res4 = model_lda.run()
+
 if __name__ == "__main__":
     """
     arg1 = "Data/"  # Path of the data folder
@@ -292,11 +297,27 @@ if __name__ == "__main__":
                     model_gradBoost.addListParameters(arg9)
                     model_gradBoost.addListParameters(arg10)
         
-        elif arg7 == "algo4":
-            if len(sys.argv) == 6:
-                print("")
+        elif arg7 == "lda":
+            if len(sys.argv) == 7:
+                model_lda = lda.LDA(dataset) 
             else:
-                print("")
+                if paramSize != (9 + add):
+                    errorParameters("<!> Not the correct number of parameters for the model <!>")
+                if arg5:
+                    # hyperparameters research
+                    arg19 = str(sys.argv[7 + add])  # Learning rate
+                    arg20 = str(sys.argv[8 + add])  # Number of estimator
+                    # transform command line into iterrable lists                    
+                    arg19 = list(map(str, list(arg19.split("/"))))
+                    arg20 = list(map(float, list(arg20.split("/"))))
+                else:
+                    arg19 = str(sys.argv[7 + add])  # Learning rate
+                    arg20 = float(sys.argv[8 + add])  # Number of estimator
+                    
+                model_lda = lda.LDA(dataset, arg19, arg20) 
+                if arg5 :  # to not have to resst each time we make a cross validation Train/Test
+                    model_lda.addListParameters(arg19)
+                    model_lda.addListParameters(arg20)
     
         elif arg7 == "algo5":
             if len(sys.argv) == 6:
@@ -328,14 +349,14 @@ if __name__ == "__main__":
             for ki in range(dataset.split):
                 print("================= Recherche hyperparamètres, kcross de dataset split = " + str(ki) + " =================")
                 dataset.split_data(ki)
-                Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost)
+                Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda)
         else:
-            Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost)
+            Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda)
 
     if(dataset.Kcross):
         for ki in tqdm(range(dataset.split)):
             print("\n================= Tests kcross de dataset split pour entrainement = " + str(ki) + " =================\n")
             dataset.split_data(ki)
-            train_test(model_knn, model_rdmForest, model_gradBoost, dataset, arg7)
+            train_test(dataset, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda)
     else:
-        resultats = train_test(model_knn, model_rdmForest, model_gradBoost, dataset, arg7)
+        resultats = train_test(dataset, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda)
