@@ -153,6 +153,28 @@ def errorParameters(message):
 
 if __name__ == "__main__":
     """
+    # SVC
+    Cs = [1, 10, 100, 1000, 1e4, 1e5]
+    kernel = ["rbf", "linear", "poly", "sigmoid"]
+    gamma = ["scale", "auto"]
+    model_svc.recherche_hyperparametres(kFold, Cs, kernel, gamma)
+    # NuSVC
+    # kernel = ["rbf", "linear", "poly", "sigmoid"]
+    # gamma = ["scale", "auto"]
+    # model_nusvc.recherche_hyperparametres(kFold, kernel, gamma)
+
+
+
+    # print("NuSVC :")
+    # model_nusvc.entrainement(dataset.xTrain(), dataset.yTrain())
+    # print("score Test = " + str(round(model_nusvc.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_nusvc.err_train[-1], 4)*100) + "%")
+    # res5 = model_nusvc.run()
+    print("SVC :")
+    model_svc.entrainement(dataset.xTrain(), dataset.yTrain())
+    print("score Test = " + str(round(model_svc.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_svc.err_train[-1], 4)*100) + "%")
+    res6 = model_svc.run()
+
+
     arg1 = "Data/"  # Path of the data folder
     arg2 = False  # Display caracteristics histograms
     arg3 = 1 # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic    
@@ -335,7 +357,17 @@ if __name__ == "__main__":
             
     # LDA
     arg18 = "svd"  # solver
-    arg19 = 0.2  # shrinkage
+    # arg19 = None  # shrinkage
+
+    # NuSVC
+    arg20 = "rbf"  # kernel
+    arg21 = "scale"  # gamma
+
+    # SVC
+    arg22 = 1  # C
+    arg23 = "rbf"  # kernel
+    arg24 = "scale"  # gamma
+
     """
     
     dataset = dt.Dataset(arg1, arg2, arg3, arg4)    
@@ -346,6 +378,9 @@ if __name__ == "__main__":
     
     if arg5:  # Cross validation        
         if(dataset.Kcross): # dataset kcross
+    model_lda = lda.LDA(dataset, arg18, arg19)
+    model_nusvc = nsvc.NUSVC(dataset, arg20, arg21)
+    model_svc = Svc.svc(dataset, arg22, arg23, arg24)
             for ki in range(dataset.split):
                 print("================= Recherche hyperparamètres, kcross de dataset split = " + str(ki) + " =================")
                 dataset.split_data(ki)
