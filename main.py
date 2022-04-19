@@ -199,49 +199,6 @@ def errorParameters(message):
 
 
 if __name__ == "__main__":
-    """
-    arg1 = "Data/"  # Path of the data folder
-    arg2 = False  # Display caracteristics histograms
-    arg3 = 1 # What is the max % of caracteristics similar in a 10% range with
-    respect to the total range of the caracteristic
-    arg4 = -1 # Number of K for Train/Test split kcross-validation. -1 for no
-    kcross data validation
-
-    arg5 = 1     # Boolean to allow the hyperparameters research or not
-    arg6 = 1     # Number of k in the k-cross validation
-
-    arg7 = "knn" # the model of the algorithm
-
-    # KNN
-    arg8 = 3  # Number of K in KNN algorithm
-    arg9 = 2  # Number of leaf size
-    arg10 = True # 1=Using manhattan distance, 0=euclidean distance
-
-    # random forest parameters
-    arg11 = 350 # Number of threes in the random forest 50
-    arg12 = 25 # maximum depth of the trees 10
-    arg13 = 2 # Number of minimum samples to create a new node 2
-    arg14 = 1 # The number of features to consider when looking for the best split 1
-    arg15 = "entropy" # The function to measure the quality of a split {"gini", "entropy"}
-
-    # Gradient Boosting
-    arg16 = 0.1  # learning rate
-    arg17 = 400  # number of estimator
-    arg18 = 5  # Minimum number of sample to create a new node
-
-    # LDA
-    arg19 = "svd"  # solver
-    arg20 = None  # shrinkage
-
-    # NuSVC
-    arg21 = "rbf"  # kernel
-    arg22 = "scale"  # gamma
-
-    # SVC
-    arg23 = 1  # C
-    arg24 = "rbf"  # kernel
-    arg25 = "scale"  # gamma
-    """
     dataset = None
     model_knn = None
     model_rdmForest = None
@@ -436,16 +393,6 @@ if __name__ == "__main__":
                     model_nusvc.addListParameters(arg25)
         else:
             errorParameters("<!> Model unknown <!>")
-
-    """
-    dataset = dt.Dataset(arg1, arg2, arg3, arg4)
-    model_knn = knn.knn(dataset, arg8, arg9, manhattan=(arg10))
-    model_rdmForest = rForest.randomForest(dataset, arg11, arg12, arg13, arg14, arg15)
-    model_gradBoost = gradientB.gradientBoosting(dataset, arg16, arg17, arg18)
-    model_lda = lda.LDA(dataset, arg18, arg19)
-    model_nusvc = nsvc.NUSVC(dataset, arg20, arg21)
-    model_svc = Svc.svc(dataset, arg22, arg23, arg24)
-    """
 
     if arg5:  # Cross validation
         if(dataset.Kcross):  # dataset kcross
