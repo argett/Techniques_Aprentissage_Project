@@ -13,4 +13,12 @@ class CommonModel():
         self.err_train = []
         self.err_valid = []
         
+        self.listOfParameters = []
+        
         self.betterValidationScore = 0
+
+    def addListParameters(self, lst):
+        self.listOfParameters.append(lst)
+        
+    def getListParameters(self, i):
+        return self.listOfParameters[i]

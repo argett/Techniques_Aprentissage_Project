@@ -64,13 +64,7 @@ class RandomForest(CommonModel):
         Returns
         -------
         None.
-        """
-        nb_trees = self.trees
-        maxDepth = self.max_depth
-        max_features = self.max_features
-        min_sample = self.min_sample
-        criterion = self.criterion
-        
+        """        
         liste_res = [] 
         liste_crit = [] 
         liste_tree = [] 
@@ -84,12 +78,12 @@ class RandomForest(CommonModel):
         meilleur_feature = None
         meilleur_sample = None
         
-        for crit in criterion:
+        for crit in self.getListParameters(4):
             print(crit)
-            for tree in tqdm(nb_trees):  # On teste plusieurs degrés du polynôme
-                for depth in maxDepth:
-                    for feature in max_features:
-                        for sample in min_sample:
+            for tree in tqdm(self.getListParameters(0)):  # On teste plusieurs degrés du polynôme
+                for depth in self.getListParameters(1):
+                    for feature in self.getListParameters(3):
+                        for sample in self.getListParameters(2):
                             sum_result = 0
                             
                             self.criterion = crit

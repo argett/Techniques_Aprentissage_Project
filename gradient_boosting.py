@@ -60,10 +60,6 @@ class GradientBoosting(CommonModel):
         -------
         None.
         """
-        learning_rate = self.learning_rate
-        n_estimators = self.estimators
-        min_samples_split = self.min_sample
-        
         liste_res = []
         liste_lr = []
         liste_est = []
@@ -73,9 +69,9 @@ class GradientBoosting(CommonModel):
         meilleur_estimantor = None 
         meilleur_sample = None 
          
-        for lr in tqdm(learning_rate):  # On teste plusieurs degrés du polynôme 
-            for esti in tqdm(n_estimators): 
-                for samp in min_samples_split: 
+        for lr in tqdm(self.getListParameters(0)):  # On teste plusieurs degrés du polynôme 
+            for esti in self.getListParameters(1): 
+                for samp in self.getListParameters(2): 
                     sum_result = 0 
                      
                     self.learning_rate = lr
