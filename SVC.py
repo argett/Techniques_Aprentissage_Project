@@ -23,7 +23,8 @@ class svc(CommonModel):
         C : float, optional
             Regularization parameter [1, 100]. Defaults to 1.0.
         kernel : str
-            Specifies the kernel type to be used in the algorithm. Defaults to 'rbf'.
+            Specifies the kernel type to be used in the algorithm. Defaults to
+            'rbf'.
         gamma : str
             Kernel coefficient for 'rbf', 'poly' and 'sigmoid' kernels.
             Defaults to 'scale'.
@@ -36,7 +37,7 @@ class svc(CommonModel):
         None.
 
         """
-        CommonModel.__init__(self,dataHandler, proportion)
+        CommonModel.__init__(self, dataHandler, proportion)
         self.Svc = None
 
         self.kernel = kernel
@@ -67,7 +68,7 @@ class svc(CommonModel):
         liste_C = []
         liste_gamma = []
         liste_kernel = []
-        
+
         better = False
         meilleur_C = None
         meilleur_gamma = None
@@ -101,8 +102,8 @@ class svc(CommonModel):
                         meilleur_C = c
                         meilleur_gamma = g
                         meilleur_kernel = k
-        
-        if better :
+
+        if better:
             self.C = meilleur_C
             self.gamma = meilleur_gamma
             self.kernel = meilleur_kernel

@@ -47,15 +47,16 @@ class Dataset:
         self.images = []
         self.split = train_split
         self.train = pd.read_csv(str(path + '/train.csv'))
-        self.unknownData = pd.read_csv(str(path + '/test.csv'))    
-        
+        self.unknownData = pd.read_csv(str(path + '/test.csv'))
+
         # preprocessing
         self.preprocess()
         to_delete = self.selectData(display, selected_data)
         self.feature_selection(to_delete)
 
-        # because train only has the specie's name and we need a verify, we must split the train dataset
-        # and to get a diversified dataset at each program run, we randomly shuffle it
+        # because train only has the specie's name and we need a verify, we
+        # must split the train dataset and to get a diversified dataset at
+        # each program run, we randomly shuffle it
         self.train = self.train.sample(frac=1)
 
         if train_split == -1:
@@ -73,8 +74,9 @@ class Dataset:
 
             for i in range(train_split):
                 self.cells.append(self.train.iloc[int(self.train.shape[0]*i/train_split):int(self.train.shape[0]*(i+1)/train_split)])
-            
-            # We reset the datasets because they are going to be well initialized after
+
+            # We reset the datasets because they are going to be well
+            # initialized after
             self.train = pd.DataFrame()
             self.test = pd.DataFrame()
 
@@ -87,7 +89,7 @@ class Dataset:
         None.
         """
         for (tr_columnName, tr_columnData) in self.train.iteritems():
-            if (not tr_columnName == 'id') and (not tr_columnName == 'species'):  # TODO : on peux optimiser ?
+            if (not tr_columnName == 'id') and (not tr_columnName == 'species'):
                 self.center_reduce(tr_columnName, tr_columnData)
                 self.normalize(tr_columnName, tr_columnData)
                 # useless
@@ -113,9 +115,9 @@ class Dataset:
 
         tr_min = np.min(colData)
         tr_max = np.max(colData)
-        te_min = np.min(self.unknownData.loc[:,colName])
-        te_max = np.max(self.unknownData.loc[:,colName])
-        
+        te_min = np.min(self.unknownData.loc[:, colName])
+        te_max = np.max(self.unknownData.loc[:, colName])
+
         if tr_min < te_min:
             _min = tr_min
         else:
@@ -127,12 +129,12 @@ class Dataset:
             _max = te_max
 
         for i in range(0, len(colData)):
-            self.train.at[i,colName] = (self.train.at[i,colName] - _min) / (_max - _min)
+            self.train.at[i,colName] = (self.train.at[i, colName] - _min) / (_max - _min)
 
             # the test has less values than the train dataset
             if i < len(self.unknownData.loc[:,colName]):
-                self.unknownData.at[i,colName] = (self.unknownData.at[i,colName] - _min) / (_max - _min)
-                
+                self.unknownData.at[i, colName] = (self.unknownData.at[i, colName] - _min) / (_max - _min)
+
     def center_reduce(self, colName, colData):
         """
         Center and reduce the data in the given column name.
@@ -151,15 +153,15 @@ class Dataset:
         """
         mean = np.mean(colData)
         std = np.std(colData)
-        
-        for i in range (0,len(colData)):
-            self.train.at[i,colName] = (self.train.at[i,colName] - mean) / std
-            
+
+        for i in range(0, len(colData)):
+            self.train.at[i, colName] = (self.train.at[i, colName] - mean) / std
+
             # the unknownData has less values than the train dataset
-            if i < len(self.unknownData.loc[:,colName]):
-                self.unknownData.at[i,colName] = (self.unknownData.at[i,colName] - mean) / std
-        
-    def troncate(self, colName):     
+            if i < len(self.unknownData.loc[:, colName]):
+                self.unknownData.at[i, colName] = (self.unknownData.at[i, colName] - mean) / std
+
+    def troncate(self, colName):
         """
         Troncate the data to reduce its precision.
 
@@ -172,7 +174,6 @@ class Dataset:
         -------
         None.
         """
-        # TODO : mettre le 5 en valeur saisissable par l'utilisateur si cette fontion est pertinente
         self.train[colName] = self.train[colName].round(5)
         self.unknownData[colName] = self.unknownData[colName].round(5)
 
@@ -231,7 +232,7 @@ class Dataset:
 
                     plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
                     plt.title(columnName)
-                    
+
                 elif "shape" in columnName:
                     i += 1
                     plt.subplot(8, 8, i)
@@ -245,7 +246,7 @@ class Dataset:
 
                     plt.gca().yaxis.set_major_formatter(PercentFormatter(xmax=len(columnData)))
                     plt.title(columnName)
-                    
+
                 elif "texture" in columnName:
                     i += 1
                     plt.subplot(8, 8, i)
@@ -265,7 +266,7 @@ class Dataset:
                     plt.show()
                     plt.subplots(figsize=(12, 12))
                     i = 0
-                    
+
         else:
             ignore = 2  # to ignore the 2 first columns (id and species)
             for (columnName, columnData) in self.train.iteritems():
@@ -318,6 +319,6 @@ class Dataset:
         return t.to_numpy()
 
     def xUnknownData(self):
-        X = np.ndarray(shape=[2,self.unknownData.shape[1]]) 
-        X = self.unknownData.loc[:,(self.unknownData.columns != 'id')] 
-        return X.to_numpy() 
+        X = np.ndarray(shape=[2, self.unknownData.shape[1]])
+        X = self.unknownData.loc[:, (self.unknownData.columns != 'id')]
+        return X.to_numpy()

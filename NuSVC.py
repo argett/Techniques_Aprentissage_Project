@@ -33,7 +33,7 @@ class NUSVC(CommonModel):
         None.
 
         """
-        CommonModel.__init__(self,dataHandler, proportion)
+        CommonModel.__init__(self, dataHandler, proportion)
         self.NSVC = None
 
         self.kernel = kernel
@@ -90,7 +90,7 @@ class NUSVC(CommonModel):
                     meilleur_kernel = k
                     meilleur_gamma = g
 
-        if better :
+        if better:
             self.kernel = meilleur_kernel
             self.gamma = meilleur_gamma
 
