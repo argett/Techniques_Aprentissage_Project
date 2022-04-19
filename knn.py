@@ -4,15 +4,14 @@ Created on Sun Feb 13 18:53:11 2022
 
 @author: Lilian
 """ 
-
-import numpy as np 
+from GeneralModel import CommonModel
 import matplotlib.pyplot as plt 
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split 
 from sklearn.neighbors import KNeighborsClassifier 
  
  
-class knn():
+class Knn(CommonModel):
     def __init__(self, dataHandler, k=3, leaf_size=2, proportion=0.2, manhattan=True):
         """ 
         Create an instance of the class 
@@ -35,17 +34,12 @@ class knn():
         None. 
  
         """ 
-        self.nn = None
-        self.dh = dataHandler
-        
-        self.proportion = proportion
+        CommonModel.__init__(self,dataHandler, proportion)
+        self.nn = None        
         
         self.nb_neighbour = k 
         self.leaf_size = leaf_size
         self.distance_method = manhattan # euclidean distance by default     
-        
-        self.err_train = []
-        self.err_valid = []
 
     def recherche_hyperparametres(self, num_fold):
         """
@@ -74,7 +68,6 @@ class knn():
         liste_k = [] 
         liste_leaf = [] 
         
-        meilleur_res = 0
         meilleur_dist = None
         meilleur_k = None 
         meilleur_leaf = None 
@@ -92,7 +85,6 @@ class knn():
                         X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=ki, shuffle=True) 
                         self.entrainement(X_learn, y_learn)
                         self.err_valid.append(self.score(X_verify, y_verify))
-                        #print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
                         sum_result += self.err_valid[-1]
                          
                     avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold   
@@ -102,8 +94,8 @@ class knn():
                     liste_k.append(k) 
                     liste_leaf.append(ls) 
                         
-                    if(avg_res_locale > meilleur_res): 
-                        meilleur_res = avg_res_locale 
+                    if(avg_res_locale > self.betterValidationScore): 
+                        self.betterValidationScore = avg_res_locale 
                         meilleur_dist = dis
                         meilleur_k = k
                         meilleur_leaf = ls

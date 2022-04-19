@@ -215,10 +215,11 @@ if __name__ == "__main__":
         
         arg7 = str(sys.argv[6 + add])  # The model of the algorithm
         
+        # creation of the dataset
         dataset = dt.Dataset(arg1, arg2, arg3, arg4)    
         if arg7 == "knn":
             if paramSize == 7:
-                model_knn = knn.knn(dataset)
+                model_knn = knn.Knn(dataset)
             else:
                 if paramSize != (10 + add):
                     errorParameters("<!> Not the correct number of parameters for the model <!>")
@@ -236,11 +237,11 @@ if __name__ == "__main__":
                     arg8 = int(sys.argv[7 + add])  # Number of K in KNN algorithm
                     arg9 = int(sys.argv[8 + add])  # Number of leaf size
                     arg10 = bool(sys.argv[9 + add])  # 1=Using manhattan distance, 0=euclidean distance
-                model_knn = knn.knn(dataset, arg8, arg9, manhattan=(arg10))
+                model_knn = knn.Knn(dataset, arg8, arg9, manhattan=(arg10))
         
         elif arg7 == "rforest":
             if paramSize == 7:
-                model_rdmForest = rForest.randomForest(dataset)
+                model_rdmForest = rForest.RandomForest(dataset)
             else:
                 if paramSize != (12 + add):
                     errorParameters("<!> Not the correct number of parameters for the model <!>")
@@ -264,11 +265,11 @@ if __name__ == "__main__":
                     arg13 = int(sys.argv[9 + add])  # Number of minimum samples to create a new node
                     arg14 = int(sys.argv[10 + add])  # The number of features to consider when looking for the best split 1
                     arg15 = str(sys.argv[11 + add])  # The function to measure the quality of a split {"gini", "entropy"}
-                model_rdmForest = rForest.randomForest(dataset, arg11, arg12, arg13, arg14, arg15)
+                model_rdmForest = rForest.RandomForest(dataset, arg11, arg12, arg13, arg14, arg15)
         
         elif arg7 == "gboost":
             if paramSize == 7:
-                model_gradBoost = gradientB.gradientBoosting(dataset) 
+                model_gradBoost = gradientB.GradientBoosting(dataset) 
             else:
                 if paramSize != (10 + add):
                     errorParameters("<!> Not the correct number of parameters for the model <!>")
@@ -285,7 +286,7 @@ if __name__ == "__main__":
                     arg16 = int(sys.argv[7 + add])  # Learning rate
                     arg17 = int(sys.argv[8 + add])  # Number of estimator
                     arg18 = int(sys.argv[9 + add])  # Minimum number of sample to create a new node
-                model_gradBoost = gradientB.gradientBoosting(dataset, arg16, arg17, arg18) 
+                model_gradBoost = gradientB.GradientBoosting(dataset, arg16, arg17, arg18) 
         
         elif arg7 == "algo4":
             if len(sys.argv) == 6:

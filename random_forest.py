@@ -4,14 +4,14 @@ Created on Thu Mar  3 19:48:20 2022
 
 @author: Lilian
 """
-
+from GeneralModel import CommonModel
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
 
-class randomForest():
+class RandomForest(CommonModel):
     def __init__(self, dataHandler, nb_trees=350, max_depth=25, min_sample=2, max_features=1, criterion="entropy", proportion=0.2):
         """
         Create an instance of the class
@@ -23,7 +23,7 @@ class randomForest():
         nb_trees : int
             The number of trees in the forest, 10 < x < 1000
         criterion : {0="gini", 1="entropy"}, optional
-            The number of trees in the forest. Default = 0 ("Gini")
+            The number of trees in the forest. Default = 0 ("entropy")
         max_features : int, optional
             The maximum depth of the tree. Default = the number of features
         proportion : float, optional
@@ -33,19 +33,14 @@ class randomForest():
         -------
         None.
         """
+        CommonModel.__init__(self,dataHandler, proportion)
         self.randomForest = None
-        self.dh = dataHandler
-        
-        self.proportion = proportion
         
         self.trees = nb_trees
         self.criterion = criterion         
         self.max_features = max_features
         self.max_depth = max_depth
         self.min_sample = min_sample
-        
-        self.err_train = []
-        self.err_valid = []
     
     def recherche_hyperparametres(self, num_fold):   
         """
@@ -83,7 +78,6 @@ class randomForest():
         liste_feature = []
         liste_sample = []
         
-        meilleur_res = 0
         meilleur_crit = None
         meilleur_tree = None
         meilleur_depth = None
@@ -107,7 +101,6 @@ class randomForest():
                                 X_learn, X_verify, y_learn, y_verify = train_test_split(self.dh.xTrain(), self.dh.yTrain(), test_size=self.proportion, random_state=k, shuffle=True)
                                 self.entrainement(X_learn, y_learn)
                                 self.err_valid.append(self.score(X_verify, y_verify))
-                                #print("Avec k= " + str(k) + ", leaf_size = " + str(ls) + ", le score de verify est " + str(score))
                                 sum_result += self.err_valid[-1]
                                 
                             avg_res_locale = sum_result/(num_fold)  # On regarde la moyenne des erreurs sur le K-fold  
@@ -122,8 +115,8 @@ class randomForest():
                             liste_feature.append(feature)  
                             liste_sample.append(sample)  
                      
-                            if(avg_res_locale > meilleur_res):
-                                meilleur_res = avg_res_locale
+                            if(avg_res_locale > self.betterValidationScore):
+                                self.betterValidationScore = avg_res_locale
                                 meilleur_crit = crit
                                 meilleur_tree = tree
                                 meilleur_depth = depth
