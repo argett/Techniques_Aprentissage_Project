@@ -33,7 +33,7 @@ class LDA(CommonModel):
         None.
 
         """
-        CommonModel.__init__(self,dataHandler, proportion)
+        CommonModel.__init__(self, dataHandler, proportion)
         self.lda = None
 
         self.solver = solver
@@ -59,7 +59,7 @@ class LDA(CommonModel):
         liste_res = []
         liste_solver = []
         liste_shrinkage = []
-        
+
         better = False
         meilleur_solver = None
         meilleur_shrinkage = None
@@ -89,7 +89,7 @@ class LDA(CommonModel):
                     meilleur_solver = solv
                     meilleur_shrinkage = sh
 
-        if better :
+        if better:
             self.solver = meilleur_solver
             self.shrinkage = meilleur_shrinkage
 

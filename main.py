@@ -184,7 +184,7 @@ if __name__ == "__main__":
     arg1 = "Data/"  # Path of the data folder
     arg2 = False  # Display caracteristics histograms
     arg3 = 1 # What is the max % of caracteristics similar in a 10% range with
-    respect to the total range of the caracteristic    
+    respect to the total range of the caracteristic
     arg4 = -1 # Number of K for Train/Test split kcross-validation. -1 for no
     kcross data validation
 
@@ -233,6 +233,7 @@ if __name__ == "__main__":
 
     arg1 = arg2 = arg3 = arg4 = arg5 = arg6 = arg7 = arg8 = arg9 = arg10 = None
     arg11 = arg12 = arg13 = arg14 = arg15 = arg16 = arg17 = arg18 = arg19 = None
+    arg20 = arg21 = arg22 = arg23 = arg24 = arg25 = arg26 = arg27 = arg28 = None
 
     add = 0
     paramSize = len(sys.argv)
@@ -330,7 +331,7 @@ if __name__ == "__main__":
                     arg16 = str(sys.argv[7 + add])  # Learning rate
                     arg17 = str(sys.argv[8 + add])  # Number of estimator
                     arg18 = str(sys.argv[9 + add])  # Minimum number of sample to create a new node
-                    # transform command line into iterrable lists          
+                    # transform command line into iterrable lists
                     arg16 = list(map(int, list(arg16.split("/"))))
                     arg17 = list(map(int, list(arg17.split("/"))))
                     arg18 = list(map(int, list(arg18.split("/"))))
@@ -355,21 +356,21 @@ if __name__ == "__main__":
                     # hyperparameters research
                     arg19 = str(sys.argv[7 + add])  # Learning rate
                     arg20 = str(sys.argv[8 + add])  # Number of estimator
-                    # transform command line into iterrable lists                    
+                    # transform command line into iterrable lists
                     arg19 = list(map(str, list(arg19.split("/"))))
                     arg20 = list(map(float, list(arg20.split("/"))))
                 else:
                     arg19 = str(sys.argv[7 + add])  # Learning rate
                     arg20 = float(sys.argv[8 + add])  # Number of estimator
 
-                model_lda = lda.LDA(dataset, arg19, arg20) 
+                model_lda = lda.LDA(dataset, arg19, arg20)
                 if arg5:  # to not have to resst each time we make a cross validation Train/Test
                     model_lda.addListParameters(arg19)
                     model_lda.addListParameters(arg20)
 
         elif arg7 == "svc":
             if len(sys.argv) == 7:
-                model_svc = Svc.svc(dataset) 
+                model_svc = Svc.svc(dataset)
             else:
                 if paramSize != (10 + add):
                     errorParameters("<!> Not the correct number of parameters for the model <!>")
@@ -378,7 +379,7 @@ if __name__ == "__main__":
                     arg21 = str(sys.argv[7 + add])  # Learning rate
                     arg22 = str(sys.argv[8 + add])  # Number of estimator
                     arg23 = str(sys.argv[9 + add])  # Number of estimator
-                    # transform command line into iterrable lists     
+                    # transform command line into iterrable lists
                     arg21 = list(map(int, list(arg21.split("/"))))
                     arg22 = list(map(str, list(arg22.split("/"))))
                     arg23 = list(map(str, list(arg23.split("/"))))
@@ -395,7 +396,7 @@ if __name__ == "__main__":
 
         elif arg7 == "nusvc":
             if len(sys.argv) == 7:
-                model_musvc = Nusvc.NUSVC(dataset)
+                model_nusvc = Nusvc.NUSVC(dataset)
             else:
                 if paramSize != (9 + add):
                     errorParameters("<!> Not the correct number of parameters for the model <!>")
@@ -403,7 +404,7 @@ if __name__ == "__main__":
                     # hyperparameters research
                     arg24 = str(sys.argv[7 + add])  # Learning rate
                     arg25 = str(sys.argv[8 + add])  # Number of estimator
-                    # transform command line into iterrable lists              
+                    # transform command line into iterrable lists
                     arg24 = list(map(str, list(arg24.split("/"))))
                     arg25 = list(map(str, list(arg25.split("/"))))
                 else:
@@ -412,8 +413,8 @@ if __name__ == "__main__":
 
                 model_musvc = Nusvc.NUSVC(dataset, arg24, arg25)
                 if arg5:  # to not have to resst each time we make a cross validation Train/Test
-                    model_musvc.addListParameters(arg24)
-                    model_musvc.addListParameters(arg25)
+                    model_nusvc.addListParameters(arg24)
+                    model_nusvc.addListParameters(arg25)
         else:
             errorParameters("<!> Model unknown <!>")
 
@@ -421,7 +422,7 @@ if __name__ == "__main__":
     dataset = dt.Dataset(arg1, arg2, arg3, arg4)
     model_knn = knn.knn(dataset, arg8, arg9, manhattan=(arg10))
     model_rdmForest = rForest.randomForest(dataset, arg11, arg12, arg13, arg14, arg15)
-    model_gradBoost = gradientB.gradientBoosting(dataset, arg16, arg17, arg18) 
+    model_gradBoost = gradientB.gradientBoosting(dataset, arg16, arg17, arg18)
     model_lda = lda.LDA(dataset, arg18, arg19)
     model_nusvc = nsvc.NUSVC(dataset, arg20, arg21)
     model_svc = Svc.svc(dataset, arg22, arg23, arg24)
