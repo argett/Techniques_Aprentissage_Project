@@ -4,15 +4,14 @@ Created on Sun Feb 13 14:55:10 2022
 
 @author: Tsiory
 """
-
+from GeneralModel import CommonModel
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
-# import numpy as np
 from sklearn.svm import NuSVC
 
 
-class NUSVC():
+class NUSVC(CommonModel):
     def __init__(self, dataHandler, kernel='rbf', gamma='scale', proportion=0.2):
         """
         Create an instance of the class
@@ -34,18 +33,13 @@ class NUSVC():
         None.
 
         """
+        CommonModel.__init__(self,dataHandler, proportion)
         self.NSVC = None
-        self.dh = dataHandler
-
-        self.proportion = proportion
 
         self.kernel = kernel
         self.gamma = gamma
 
-        self.err_train = []
-        self.err_valid = []
-
-    def recherche_hyperparametres(self, num_fold, kernel, gamma):
+    def recherche_hyperparametres(self, num_fold):
         """
         Recherche des hyperparamètres pour le NuSVC
 
@@ -67,12 +61,11 @@ class NUSVC():
         liste_kernel = []
         liste_gamma = []
 
-        meilleur_res = 0
         meilleur_kernel = None
         meilleur_gamma = None
 
-        for k in tqdm(kernel):
-            for g in gamma:
+        for k in tqdm(self.getListParameters(0)):
+            for g in self.getListParameters(1):
                 sum_results = 0
 
                 self.kernel = k
@@ -90,8 +83,8 @@ class NUSVC():
                 liste_kernel.append(k)
                 liste_gamma.append(g)
 
-                if avg_res_local > meilleur_res:
-                    meilleur_res = avg_res_local
+                if avg_res_local > self.betterValidationScore:
+                    self.betterValidationScore = avg_res_local
                     meilleur_kernel = k
                     meilleur_gamma = g
 
@@ -110,8 +103,9 @@ class NUSVC():
         plt.title("NuSVC : Gamma")
         plt.show()
 
-        print("Meilleur kernel : " + str(meilleur_kernel))
-        print("Meilleur gamma : " + str(meilleur_gamma))
+        print("\nLes meilleurs parametres parmis ceux essayes sont :")
+        print("\tMeilleur kernel : " + str(meilleur_kernel))
+        print("\tMeilleur gamma : " + str(meilleur_gamma))
 
     def entrainement(self, X_train, y_train):
         """

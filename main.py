@@ -47,12 +47,12 @@ import knn as knn
 import gradient_boosting as gradientB
 import numpy as np
 import LinearDiscriminantAnalysis as lda
-#import NuSVC as nusvc
-#import SVC as svc
+import NuSVC as Nusvc
+import SVC as Svc
 import sys
 
 
-def Kcross_validation(kFold, model, model_knn, model_rdmForest, model_gradBoost, model_lda):
+def Kcross_validation(kFold, model, model_knn, model_rdmForest, model_gradBoost, model_lda, model_svc, model_nusvc):
     if model == "knn":
         model_knn.recherche_hyperparametres(kFold)  
         plt.plot(model_knn.err_train, label='Score train')
@@ -82,10 +82,30 @@ def Kcross_validation(kFold, model, model_knn, model_rdmForest, model_gradBoost,
         plt.plot(model_lda.err_train, label='Score train')
         plt.plot(model_lda.err_valid, label='Score valid')
         plt.legend()
-        plt.title("Gradient Boosting : Bonne réponse moyenne sur K-fold validation avec distance de Manhattan")
+        plt.title("Linear Discriminant Analysis : Bonne réponse moyenne sur K-fold validation")
         plt.show()
     
-def train_test(dataset, model, model_knn, model_rdmForest, model_gradBoost, model_lda):
+    elif model == "svc":
+        model_svc.recherche_hyperparametres(kFold) 
+        plt.plot(model_svc.err_train, label='Score train')
+        plt.plot(model_svc.err_valid, label='Score valid')
+        plt.legend()
+        plt.title("Support Vector Classification : Bonne réponse moyenne sur K-fold validation")
+        plt.show()
+        
+    elif model == "nusvc":
+        model_nusvc.recherche_hyperparametres(kFold) 
+        plt.plot(model_lda.err_train, label='Score train')
+        plt.plot(model_lda.err_valid, label='Score valid')
+        plt.legend()
+        plt.title("Nu Support Vector Classification : Bonne réponse moyenne sur K-fold validation")
+        plt.show()
+        
+    else:
+        errorParameters("<!> Model unknown <!>")
+        
+    
+def train_test(dataset, model, model_knn, model_rdmForest, model_gradBoost, model_lda, model_svc, model_nusvc):
     if model == "knn":
         model_knn.entrainement(dataset.xTrain(), dataset.yTrain())
         print("score Test = " + str(round(model_knn.score(dataset.xTest(), dataset.yTest()),4)*100) + "%, score train = " + str(round(model_knn.err_train[-1],4)*100) + "%")
@@ -105,7 +125,19 @@ def train_test(dataset, model, model_knn, model_rdmForest, model_gradBoost, mode
         model_lda.entrainement(dataset.xTrain(), dataset.yTrain())
         print("score Test = " + str(round(model_lda.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_lda.err_train[-1], 4)*100) + "%")
         #res4 = model_lda.run()
-    #[res1.tolist(), res2.tolist(), res3.tolist()]
+        
+    elif model == "svc":
+        model_svc.entrainement(dataset.xTrain(), dataset.yTrain())
+        print("score Test = " + str(round(model_svc.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_svc.err_train[-1], 4)*100) + "%")
+        #res5 = model_svc.run()
+        
+    elif model == "nusvc":
+        model_nusvc.entrainement(dataset.xTrain(), dataset.yTrain())
+        print("score Test = " + str(round(model_nusvc.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_nusvc.err_train[-1], 4)*100) + "%")
+        # res6 = model_nusvc.run()
+        
+    else:
+        errorParameters("<!> Model unknown <!>")
     
     
 def errorParameters(message):
@@ -153,28 +185,6 @@ def errorParameters(message):
 
 if __name__ == "__main__":
     """
-    # SVC
-    Cs = [1, 10, 100, 1000, 1e4, 1e5]
-    kernel = ["rbf", "linear", "poly", "sigmoid"]
-    gamma = ["scale", "auto"]
-    model_svc.recherche_hyperparametres(kFold, Cs, kernel, gamma)
-    # NuSVC
-    # kernel = ["rbf", "linear", "poly", "sigmoid"]
-    # gamma = ["scale", "auto"]
-    # model_nusvc.recherche_hyperparametres(kFold, kernel, gamma)
-
-
-
-    # print("NuSVC :")
-    # model_nusvc.entrainement(dataset.xTrain(), dataset.yTrain())
-    # print("score Test = " + str(round(model_nusvc.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_nusvc.err_train[-1], 4)*100) + "%")
-    # res5 = model_nusvc.run()
-    print("SVC :")
-    model_svc.entrainement(dataset.xTrain(), dataset.yTrain())
-    print("score Test = " + str(round(model_svc.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_svc.err_train[-1], 4)*100) + "%")
-    res6 = model_svc.run()
-
-
     arg1 = "Data/"  # Path of the data folder
     arg2 = False  # Display caracteristics histograms
     arg3 = 1 # What is the max % of caracteristics similar in a 10% range with respect to the total range of the caracteristic    
@@ -201,13 +211,31 @@ if __name__ == "__main__":
     arg16 = 0.1  # learning rate
     arg17 = 400  # number of estimator
     arg18 = 5  # Minimum number of sample to create a new node
+    
+    # LDA
+    arg19 = "svd"  # solver
+    arg20 = None  # shrinkage
+
+    # NuSVC
+    arg21 = "rbf"  # kernel
+    arg22 = "scale"  # gamma
+
+    # SVC
+    arg23 = 1  # C
+    arg24 = "rbf"  # kernel
+    arg25 = "scale"  # gamma
     """
     dataset = None
     model_knn = None
     model_rdmForest = None
     model_gradBoost = None
+    model_lda = None
+    model_svc = None
+    model_nusvc = None
+    
     arg1 = arg2 = arg3 = arg4 = arg5 = arg6 = arg7 = arg8 = arg9 = arg10 = None
     arg11 = arg12 = arg13 = arg14 = arg15 = arg16 = arg17 = arg18 = arg19 = None
+    
     add = 0
     paramSize = len(sys.argv)
     
@@ -341,32 +369,56 @@ if __name__ == "__main__":
                     model_lda.addListParameters(arg19)
                     model_lda.addListParameters(arg20)
     
-        elif arg7 == "algo5":
-            if len(sys.argv) == 6:
-                print("")
+        elif arg7 == "svc":
+            if len(sys.argv) == 7:
+                model_svc = Svc.svc(dataset) 
             else:
-                print("")
+                if paramSize != (10 + add):
+                    errorParameters("<!> Not the correct number of parameters for the model <!>")
+                if arg5:
+                    # hyperparameters research
+                    arg21 = str(sys.argv[7 + add])  # Learning rate
+                    arg22 = str(sys.argv[8 + add])  # Number of estimator
+                    arg23 = str(sys.argv[9 + add])  # Number of estimator
+                    # transform command line into iterrable lists                    
+                    arg21 = list(map(int, list(arg21.split("/"))))
+                    arg22 = list(map(str, list(arg22.split("/"))))
+                    arg23 = list(map(str, list(arg23.split("/"))))
+                else:
+                    arg21 = int(sys.argv[7 + add])  # Learning rate
+                    arg22 = str(sys.argv[8 + add])  # Number of estimator
+                    arg23 = str(sys.argv[9 + add])  # Number of estimator
+                    
+                model_svc = Svc.svc(dataset, arg21, arg22, arg23) 
+                if arg5 :  # to not have to resst each time we make a cross validation Train/Test
+                    model_svc.addListParameters(arg21)
+                    model_svc.addListParameters(arg22)
+                    model_svc.addListParameters(arg23)
         
-        elif arg7 == "algo6":
-            if len(sys.argv) == 6:
-                print("")
+        elif arg7 == "nusvc":
+            if len(sys.argv) == 7:
+                model_musvc = Nusvc.NUSVC(dataset) 
             else:
-                print("")
+                if paramSize != (9 + add):
+                    errorParameters("<!> Not the correct number of parameters for the model <!>")
+                if arg5:
+                    # hyperparameters research
+                    arg24 = str(sys.argv[7 + add])  # Learning rate
+                    arg25 = str(sys.argv[8 + add])  # Number of estimator
+                    # transform command line into iterrable lists                    
+                    arg24 = list(map(str, list(arg24.split("/"))))
+                    arg25 = list(map(str, list(arg25.split("/"))))
+                else:
+                    arg24 = str(sys.argv[7 + add])  # Learning rate
+                    arg25 = str(sys.argv[8 + add])  # Number of estimator
+                    
+                model_musvc = Nusvc.NUSVC(dataset, arg24, arg25) 
+                if arg5 :  # to not have to resst each time we make a cross validation Train/Test
+                    model_musvc.addListParameters(arg24)
+                    model_musvc.addListParameters(arg25)
         else:
             errorParameters("<!> Model unknown <!>")
             
-    # LDA
-    arg18 = "svd"  # solver
-    # arg19 = None  # shrinkage
-
-    # NuSVC
-    arg20 = "rbf"  # kernel
-    arg21 = "scale"  # gamma
-
-    # SVC
-    arg22 = 1  # C
-    arg23 = "rbf"  # kernel
-    arg24 = "scale"  # gamma
 
     """
     
@@ -374,24 +426,24 @@ if __name__ == "__main__":
     model_knn = knn.knn(dataset, arg8, arg9, manhattan=(arg10))
     model_rdmForest = rForest.randomForest(dataset, arg11, arg12, arg13, arg14, arg15)
     model_gradBoost = gradientB.gradientBoosting(dataset, arg16, arg17, arg18) 
+    model_lda = lda.LDA(dataset, arg18, arg19)
+    model_nusvc = nsvc.NUSVC(dataset, arg20, arg21)
+    model_svc = Svc.svc(dataset, arg22, arg23, arg24)
     """
     
     if arg5:  # Cross validation        
         if(dataset.Kcross): # dataset kcross
-    model_lda = lda.LDA(dataset, arg18, arg19)
-    model_nusvc = nsvc.NUSVC(dataset, arg20, arg21)
-    model_svc = Svc.svc(dataset, arg22, arg23, arg24)
             for ki in range(dataset.split):
                 print("================= Recherche hyperparamètres, kcross de dataset split = " + str(ki) + " =================")
                 dataset.split_data(ki)
-                Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda)
+                Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda, model_svc, model_nusvc)
         else:
-            Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda)
+            Kcross_validation(arg6, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda, model_svc, model_nusvc)
 
     if(dataset.Kcross):
         for ki in tqdm(range(dataset.split)):
             print("\n================= Tests kcross de dataset split pour entrainement = " + str(ki) + " =================\n")
             dataset.split_data(ki)
-            train_test(dataset, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda)
+            train_test(dataset, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda, model_svc, model_nusvc)
     else:
-        resultats = train_test(dataset, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda)
+        resultats = train_test(dataset, arg7, model_knn, model_rdmForest, model_gradBoost, model_lda, model_svc, model_nusvc)

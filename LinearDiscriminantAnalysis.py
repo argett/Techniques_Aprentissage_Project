@@ -102,8 +102,9 @@ class LDA(CommonModel):
         plt.title("Linear Discriminant Analysis : Shrinkage")
         plt.show()
 
-        print("Meilleur solver : ", meilleur_solver)
-        print("Meilleur shrinkage : ", meilleur_shrinkage)
+        print("\nLes meilleurs parametres parmis ceux essayes sont :")
+        print("\tMeilleur solver : ", meilleur_solver)
+        print("\tMeilleur shrinkage : ", meilleur_shrinkage)
 
     def entrainement(self, X_train, y_train):
         """

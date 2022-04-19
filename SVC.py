@@ -4,15 +4,14 @@ Created on Sun Feb 13 14:56:05 2022
 
 @author: Tsiory
 """
-
+from GeneralModel import CommonModel
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
-# import numpy as np
 from sklearn.svm import SVC
 
 
-class svc():
+class svc(CommonModel):
     def __init__(self, dataHandler, C=1.0, kernel='rbf', gamma='scale', proportion=0.2):
         """
         Create an instance of the class
@@ -38,19 +37,14 @@ class svc():
         None.
 
         """
+        CommonModel.__init__(self,dataHandler, proportion)
         self.Svc = None
-        self.dh = dataHandler
-
-        self.proportion = proportion
 
         self.kernel = kernel
         self.C = C
         self.gamma = gamma
 
-        self.err_train = []
-        self.err_valid = []
-
-    def recherche_hyperparametres(self, num_fold, C, kernel, gamma):
+    def recherche_hyperparametres(self, num_fold):
         """
         Recherche des hyperparamètres pour le SVC
 
@@ -75,14 +69,13 @@ class svc():
         liste_gamma = []
         liste_kernel = []
 
-        meilleur_resultat = 0
         meilleur_C = None
         meilleur_gamma = None
         meilleur_kernel = None
 
-        for c in tqdm(C):
-            for g in gamma:
-                for k in kernel:
+        for c in tqdm(self.getListParameters(0)):
+            for g in self.getListParameters(1):
+                for k in self.getListParameters(2):
                     sum_results = 0
 
                     self.C = c
@@ -102,8 +95,8 @@ class svc():
                     liste_gamma.append(g)
                     liste_kernel.append(k)
 
-                    if avg_res_local > meilleur_resultat:
-                        meilleur_resultat = avg_res_local
+                    if avg_res_local > self.betterValidationScore:
+                        self.betterValidationScore = avg_res_local
                         meilleur_C = c
                         meilleur_gamma = g
                         meilleur_kernel = k
@@ -128,9 +121,10 @@ class svc():
         plt.title("SVC : Kernel en fonction du nombre de folds")
         plt.show()
 
-        print("Meilleur C : ", meilleur_C)
-        print("Meilleur Gamma : ", meilleur_gamma)
-        print("Meilleur Kernel : ", meilleur_kernel)
+        print("\nLes meilleurs parametres parmis ceux essayes sont :")
+        print("\tMeilleur C : ", meilleur_C)
+        print("\tMeilleur Gamma : ", meilleur_gamma)
+        print("\tMeilleur Kernel : ", meilleur_kernel)
 
     def entrainement(self, X_train, y_train):
         """
