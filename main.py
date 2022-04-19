@@ -40,12 +40,15 @@ pour améliorer vos résultats? Etc.
 """
 
 from tqdm import tqdm
-import matplotlib.pyplot as plt 
+# import matplotlib.pyplot as plt
 import Dataset as dt
 import random_forest as rForest
 import knn as knn
 import gradient_boosting as gradientB
 import numpy as np
+import LinearDiscriminantAnalysis as lda
+import NuSVC as nusvc
+import SVC as svc
 import sys
 
 
@@ -135,6 +138,14 @@ def errorParameters(message):
     print("\tpython3 main.py Data 0 1 3 1 1 rforest 50/100 2/5/10 5/8/13 gini/entropy\n")
     sys.exit(message)
     
+    # Linear Discriminant Analysis
+    shrinkage = list(np.arange(0.0, 1.0, 0.01))
+    solver = ["svd", "lsqr", "eigen"]
+    model_lda.recherche_hyperparametres(kFold, solver, shrinkage)
+    print("LDA :")
+    model_lda.entrainement(dataset.xTrain(), dataset.yTrain())
+    print("score Test = " + str(round(model_lda.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_lda.err_train[-1], 4)*100) + "%")
+    res4 = model_lda.run()
 if __name__ == "__main__":
     """
     arg1 = "Data/"  # Path of the data folder
@@ -301,6 +312,9 @@ if __name__ == "__main__":
         else:
             errorParameters("<!> Model unknown <!>")
             
+    # LDA
+    arg18 = "svd"  # solver
+    arg19 = 0.2  # shrinkage
     """
     
     dataset = dt.Dataset(arg1, arg2, arg3, arg4)    
