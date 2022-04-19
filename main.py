@@ -42,9 +42,9 @@ pour améliorer vos résultats? Etc.
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import Dataset as dt
-import random_forest as rForest
-import knn as knn
-import gradient_boosting as gradientB
+import RandomForest as rForest
+import Knn as knn
+import GradientBoosting as gradientB
 import LinearDiscriminantAnalysis as lda
 import NuSVC as Nusvc
 import SVC as Svc
