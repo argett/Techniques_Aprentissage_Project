@@ -60,6 +60,7 @@ class LDA(CommonModel):
         liste_solver = []
         liste_shrinkage = []
         
+        better = False
         meilleur_solver = None
         meilleur_shrinkage = None
 
@@ -83,12 +84,18 @@ class LDA(CommonModel):
                 liste_shrinkage.append(sh)
 
                 if avg_res_locale > self.betterValidationScore:
+                    better = True
                     self.betterValidationScore = avg_res_locale
                     meilleur_solver = solv
                     meilleur_shrinkage = sh
 
-        self.solver = meilleur_solver
-        self.shrinkage = meilleur_shrinkage
+        if better :
+            self.solver = meilleur_solver
+            self.shrinkage = meilleur_shrinkage
+
+            print("\nLes meilleurs parametres parmis ceux essayes sont :")
+            print("\tMeilleur solver : ", meilleur_solver)
+            print("\tMeilleur shrinkage : ", meilleur_shrinkage)
 
         plt.plot(liste_res)
         plt.title("Linear Discriminant Analysis : Bonne réponse moyenne sur les K validations")
@@ -101,10 +108,6 @@ class LDA(CommonModel):
         plt.plot(liste_shrinkage)
         plt.title("Linear Discriminant Analysis : Shrinkage")
         plt.show()
-
-        print("\nLes meilleurs parametres parmis ceux essayes sont :")
-        print("\tMeilleur solver : ", meilleur_solver)
-        print("\tMeilleur shrinkage : ", meilleur_shrinkage)
 
     def entrainement(self, X_train, y_train):
         """

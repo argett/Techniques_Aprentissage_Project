@@ -65,6 +65,7 @@ class GradientBoosting(CommonModel):
         liste_est = []
         liste_sam = []
         
+        better = False
         meilleur_lr = None 
         meilleur_estimantor = None 
         meilleur_sample = None 
@@ -92,14 +93,21 @@ class GradientBoosting(CommonModel):
                     liste_sam.append(samp)
 
                     if(avg_res_locale > self.betterValidationScore): 
+                        better = True
                         self.betterValidationScore = avg_res_locale 
                         meilleur_lr = lr 
                         meilleur_estimantor = esti 
                         meilleur_sample = samp 
-                                     
-        self.learning_rate = meilleur_lr
-        self.estimators = meilleur_estimantor
-        self.min_sample = meilleur_sample
+            
+        if better :                         
+            self.learning_rate = meilleur_lr
+            self.estimators = meilleur_estimantor
+            self.min_sample = meilleur_sample
+            
+            print("\nLes meilleurs parametres parmis ceux essayes sont :")
+            print("\tMeilleur learning rate = " + str(meilleur_lr)) 
+            print("\tMeilleur nombre d'estimators = " + str(meilleur_estimantor)) 
+            print("\tMeilleur sample= " + str(meilleur_sample)) 
         
         plt.plot(liste_res)
         plt.title("Gradient boosting : Bonne réponse moyenne sur les K validations")
@@ -113,11 +121,6 @@ class GradientBoosting(CommonModel):
         plt.plot(liste_sam)
         plt.title("Gradient boosting : Valeurs du nombre de sample")
         plt.show()
-        
-        print("\nLes meilleurs parametres parmis ceux essayes sont :")
-        print("\tMeilleur learning rate = " + str(meilleur_lr)) 
-        print("\tMeilleur nombre d'estimators = " + str(meilleur_estimantor)) 
-        print("\tMeilleur sample= " + str(meilleur_sample)) 
      
     def entrainement(self, xData, yData): 
         """

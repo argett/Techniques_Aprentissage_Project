@@ -21,10 +21,9 @@ class svc(CommonModel):
         dataHandler : Dataset
             The dataset with everything loaded from the main
         C : float, optional
-            Regularization parameter. Defaults to 1.0.
+            Regularization parameter [1, 100]. Defaults to 1.0.
         kernel : str
-            Specifies the kernel type to be used in the algorithm. Defaults to
-            'rbf'.
+            Specifies the kernel type to be used in the algorithm. Defaults to 'rbf'.
         gamma : str
             Kernel coefficient for 'rbf', 'poly' and 'sigmoid' kernels.
             Defaults to 'scale'.
@@ -68,14 +67,15 @@ class svc(CommonModel):
         liste_C = []
         liste_gamma = []
         liste_kernel = []
-
+        
+        better = False
         meilleur_C = None
         meilleur_gamma = None
         meilleur_kernel = None
 
         for c in tqdm(self.getListParameters(0)):
-            for g in self.getListParameters(1):
-                for k in self.getListParameters(2):
+            for g in self.getListParameters(2):
+                for k in self.getListParameters(1):
                     sum_results = 0
 
                     self.C = c
@@ -96,14 +96,21 @@ class svc(CommonModel):
                     liste_kernel.append(k)
 
                     if avg_res_local > self.betterValidationScore:
+                        better = True
                         self.betterValidationScore = avg_res_local
                         meilleur_C = c
                         meilleur_gamma = g
                         meilleur_kernel = k
+        
+        if better :
+            self.C = meilleur_C
+            self.gamma = meilleur_gamma
+            self.kernel = meilleur_kernel
 
-        self.C = meilleur_C
-        self.gamma = meilleur_gamma
-        self.kernel = meilleur_kernel
+            print("\nLes meilleurs parametres parmis ceux essayes sont :")
+            print("\tMeilleur C : ", meilleur_C)
+            print("\tMeilleur Gamma : ", meilleur_gamma)
+            print("\tMeilleur Kernel : ", meilleur_kernel)
 
         plt.plot(liste_resultats)
         plt.title("SVC : Bonne réponse moyenne en fonction du nombre de folds")
@@ -120,11 +127,6 @@ class svc(CommonModel):
         plt.plot(liste_kernel)
         plt.title("SVC : Kernel en fonction du nombre de folds")
         plt.show()
-
-        print("\nLes meilleurs parametres parmis ceux essayes sont :")
-        print("\tMeilleur C : ", meilleur_C)
-        print("\tMeilleur Gamma : ", meilleur_gamma)
-        print("\tMeilleur Kernel : ", meilleur_kernel)
 
     def entrainement(self, X_train, y_train):
         """

@@ -58,23 +58,20 @@ class Knn(CommonModel):
         -------
         None.
 
-        """
-        distance = self.distance_method
-        number_cluster = self.nb_neighbour
-        leaf = self.leaf_size
-        
+        """        
         liste_res = [] 
         liste_dist = [] 
         liste_k = [] 
         liste_leaf = [] 
         
+        better = False
         meilleur_dist = None
         meilleur_k = None 
         meilleur_leaf = None 
         
-        for dis in distance:
-            for k in tqdm(number_cluster):  # On teste plusieurs degrés du polynôme 
-                for ls in leaf:
+        for dis in self.getListParameters(2):
+            for k in tqdm(self.getListParameters(0)):  # On teste plusieurs degrés du polynôme 
+                for ls in self.getListParameters(1):
                     sum_result = 0 
 
                     self.distance_method = dis
@@ -95,14 +92,22 @@ class Knn(CommonModel):
                     liste_leaf.append(ls) 
                         
                     if(avg_res_locale > self.betterValidationScore): 
+                        better = True
                         self.betterValidationScore = avg_res_locale 
                         meilleur_dist = dis
                         meilleur_k = k
                         meilleur_leaf = ls
-                
-        self.distance_method = meilleur_dist
-        self.nb_neighbour = meilleur_k
-        self.leaf_size = meilleur_leaf
+             
+        if better :   
+            self.distance_method = meilleur_dist
+            self.nb_neighbour = meilleur_k
+            self.leaf_size = meilleur_leaf
+            
+            print("\nLes meilleurs parametres parmis ceux essayes sont :")
+            print("\tMeilleur nombre de voisins = " + str(meilleur_k))
+            print("\tMeilleur taille de feuille = " + str(meilleur_leaf))
+            print("\tMeilleure distance (0=euclidienne, 1=manhattan)= " + str(meilleur_dist))
+
         
         plt.plot(liste_res) 
         plt.title("KNN : Bonne réponse moyenne sur les K-fold validations") 
@@ -115,12 +120,8 @@ class Knn(CommonModel):
         plt.show() 
         plt.plot(liste_leaf) 
         plt.title("KNN : Valeurs de la taille des feuilles") 
-        plt.show() 
-        print("\nLes meilleurs parametres parmis ceux essayes sont :")
-        print("\tMeilleur nombre de voisins = " + str(meilleur_k))
-        print("\tMeilleur taille de feuille = " + str(meilleur_leaf))
-        print("\tMeilleure distance (0=euclidienne, 1=manhattan)= " + str(meilleur_dist))
-
+        plt.show()
+        
     def entrainement(self, xData, yData):
         """
         Fit the model with respect to the parameters given by the k-fold function or the ones given when initialising the model.

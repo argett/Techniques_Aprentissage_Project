@@ -72,6 +72,7 @@ class RandomForest(CommonModel):
         liste_feature = []
         liste_sample = []
         
+        better = False
         meilleur_crit = None
         meilleur_tree = None
         meilleur_depth = None
@@ -110,18 +111,27 @@ class RandomForest(CommonModel):
                             liste_sample.append(sample)  
                      
                             if(avg_res_locale > self.betterValidationScore):
+                                better = True
                                 self.betterValidationScore = avg_res_locale
                                 meilleur_crit = crit
                                 meilleur_tree = tree
                                 meilleur_depth = depth
                                 meilleur_feature = feature
                                 meilleur_sample = sample
-                                    
-        self.criterion = meilleur_crit
-        self.trees = meilleur_tree
-        self.max_features = meilleur_feature
-        self.max_depth = meilleur_depth
-        self.min_sample = meilleur_sample
+         
+        if better :                           
+            self.criterion = meilleur_crit
+            self.trees = meilleur_tree
+            self.max_features = meilleur_feature
+            self.max_depth = meilleur_depth
+            self.min_sample = meilleur_sample
+            
+            print("\nLes meilleurs parametres parmis ceux essayes sont :")
+            print("\tMeilleur critère = " + str(meilleur_crit))
+            print("\tMeilleur nombre d'abres = " + str(meilleur_tree))
+            print("\tMeilleu nombre de feature max = " + str(meilleur_feature))
+            print("\tMeilleure pronfondeure = " + str(meilleur_depth))
+            print("\tMeilleur sample = " + str(meilleur_sample))
         
         plt.plot(liste_res)  
         plt.title("Random Forest : Bonne réponse moyenne sur les K-fold validations")  
@@ -141,13 +151,6 @@ class RandomForest(CommonModel):
         plt.plot(liste_sample)  
         plt.title("Random Forest : Nombre d'éléments minnimum pour pouvoir passer d'une feuille à un noeud")  
         plt.show()  
-        
-        print("\nLes meilleurs parametres parmis ceux essayes sont :")
-        print("\tMeilleur critère = " + str(meilleur_crit))
-        print("\tMeilleur nombre d'abres = " + str(meilleur_tree))
-        print("\tMeilleu nombre de feature max = " + str(meilleur_feature))
-        print("\tMeilleure pronfondeure = " + str(meilleur_depth))
-        print("\tMeilleur sample = " + str(meilleur_sample))
         
     def entrainement(self, xData, yData):
         """

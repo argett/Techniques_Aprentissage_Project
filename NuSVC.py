@@ -61,6 +61,7 @@ class NUSVC(CommonModel):
         liste_kernel = []
         liste_gamma = []
 
+        better = False
         meilleur_kernel = None
         meilleur_gamma = None
 
@@ -84,12 +85,18 @@ class NUSVC(CommonModel):
                 liste_gamma.append(g)
 
                 if avg_res_local > self.betterValidationScore:
+                    better = True
                     self.betterValidationScore = avg_res_local
                     meilleur_kernel = k
                     meilleur_gamma = g
 
-        self.kernel = meilleur_kernel
-        self.gamma = meilleur_gamma
+        if better :
+            self.kernel = meilleur_kernel
+            self.gamma = meilleur_gamma
+
+            print("\nLes meilleurs parametres parmis ceux essayes sont :")
+            print("\tMeilleur kernel : " + str(meilleur_kernel))
+            print("\tMeilleur gamma : " + str(meilleur_gamma))
 
         plt.plot(liste_res)
         plt.title("NuSVC : Bonne réponse moyenne sur les " + str(num_fold) + " folds")
@@ -102,10 +109,6 @@ class NUSVC(CommonModel):
         plt.plot(liste_gamma)
         plt.title("NuSVC : Gamma")
         plt.show()
-
-        print("\nLes meilleurs parametres parmis ceux essayes sont :")
-        print("\tMeilleur kernel : " + str(meilleur_kernel))
-        print("\tMeilleur gamma : " + str(meilleur_gamma))
 
     def entrainement(self, X_train, y_train):
         """
