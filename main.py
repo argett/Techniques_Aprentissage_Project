@@ -80,7 +80,7 @@ def processResult(allLists):
         print("La liste " + str(i) + " a " + str(list_compare[i]) + " / " + str(len(allLists[0])) + " résultats qui sont comme la réponse la plus fréquente")
 
 
-def Kcross_validation(arg6, model_nusvc):  # arg6, model_nusvc, model_lda, model_knn, model_rdmForest, model_lda, model_gradBoost):
+def Kcross_validation(arg6, model_svc):  # arg6, model_svc, model_nusvc, model_lda, model_knn, model_rdmForest, model_lda, model_gradBoost):
     kFold = arg6
 
     # KNN
@@ -110,12 +110,18 @@ def Kcross_validation(arg6, model_nusvc):  # arg6, model_nusvc, model_lda, model
     shrinkage = list(np.arange(0.0, 1.0, 0.01))
     model_lda.recherche_hyperparametres(kFold, solver, shrinkage)
     # NuSVC
+    # kernel = ["rbf", "linear", "poly", "sigmoid"]
+    # gamma = ["scale", "auto"]
+    # model_nusvc.recherche_hyperparametres(kFold, kernel, gamma)
+
+    # SVC
+    Cs = [1, 10, 100, 1000, 1e4, 1e5]
     kernel = ["rbf", "linear", "poly", "sigmoid"]
     gamma = ["scale", "auto"]
-    model_nusvc.recherche_hyperparametres(kFold, kernel, gamma)
+    model_svc.recherche_hyperparametres(kFold, Cs, kernel, gamma)
 
 
-def train_test(model_knn, model_rdmForest, model_gradBoost, model_lda, dataset):
+def train_test(model_svc, dataset):  # model_svc, model_nusvc, model_lda, model_knn, model_rdmForest, model_gradBoost, model_lda, dataset):
     print("KNN :")
     model_knn.entrainement(dataset.xTrain(), dataset.yTrain())
     print("score Test = " + str(round(model_knn.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_knn.err_train[-1], 4)*100) + "%")
@@ -135,8 +141,16 @@ def train_test(model_knn, model_rdmForest, model_gradBoost, model_lda, dataset):
     model_lda.entrainement(dataset.xTrain(), dataset.yTrain())
     print("score Test = " + str(round(model_lda.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_lda.err_train[-1], 4)*100) + "%")
     res4 = model_lda.run()
+    # print("NuSVC :")
+    # model_nusvc.entrainement(dataset.xTrain(), dataset.yTrain())
+    # print("score Test = " + str(round(model_nusvc.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_nusvc.err_train[-1], 4)*100) + "%")
+    # res5 = model_nusvc.run()
+    print("SVC :")
+    model_svc.entrainement(dataset.xTrain(), dataset.yTrain())
+    print("score Test = " + str(round(model_svc.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_svc.err_train[-1], 4)*100) + "%")
+    res6 = model_svc.run()
 
-    print("NuSVC :")
+    return res6.tolist()  # [res1.tolist(), res2.tolist(), res3.tolist(), res4.tolist(), res5.tolist()]
     model_nusvc.entrainement(dataset.xTrain(), dataset.yTrain())
     print("score Test = " + str(round(model_nusvc.score(dataset.xTest(), dataset.yTest()), 4)*100) + "%, score train = " + str(round(model_nusvc.err_train[-1], 4)*100) + "%")
     res5 = model_nusvc.run()
@@ -176,6 +190,12 @@ if __name__ == "__main__":
     # NuSVC
     arg20 = "rbf"  # kernel
     arg21 = "scale"  # gamma
+
+    # SVC
+    arg22 = 1  # C
+    arg23 = "rbf"  # kernel
+    arg24 = "scale"  # gamma
+
     """
     if len(sys.argv) < 8:
         print("Usage: python main.py ... and add the parameters\n")
@@ -219,15 +239,16 @@ if __name__ == "__main__":
     model_gradBoost = gradientB.gradientBoosting(dataset, arg15, arg16, arg17)
     model_lda = lda.LDA(dataset, arg18, arg19)
     model_nusvc = nsvc.NUSVC(dataset, arg20, arg21)
+    model_svc = Svc.svc(dataset, arg22, arg23, arg24)
 
     if arg5 == 1:  # Cross validation
         if(dataset.Kcross):  # dataset kcross
             for ki in range(dataset.split):
                 print("================= Recherche hyperparamètres, kcross de dataset split = " + str(ki) + " =================")
                 dataset.split_data(ki)
-                Kcross_validation(arg6, model_nusvc)  # model_nusvc, model_lda, model_knn, model_rdmForest, model_gradBoost)
+                Kcross_validation(arg6, model_svc)  # model_svc, model_nusvc, model_lda, model_knn, model_rdmForest, model_gradBoost)
         else:
-            Kcross_validation(arg6, model_nusvc)  # model_nusvc, model_lda, model_knn, model_rdmForest, model_gradBoost)
+            Kcross_validation(arg6, model_svc)  # model_svc, model_nusvc, model_lda, model_knn, model_rdmForest, model_gradBoost)
 
     """
     plt.plot(model_knn.err_train, label='Score train')
@@ -241,7 +262,7 @@ if __name__ == "__main__":
         for ki in tqdm(range(dataset.split)):
             print("\n================= Tests kcross de dataset split pour entrainement = " + str(ki) + " =================\n")
             dataset.split_data(ki)
-            train_test(model_nusvc, dataset)  # model_nusvc, model_lda, model_knn, model_rdmForest, model_gradBoost, model_lda, dataset)
+            train_test(model_svc, dataset)  # model_svc, model_nusvc, model_lda, model_knn, model_rdmForest, model_gradBoost, model_lda, dataset)
     else:
-        resultats = train_test(model_nusvc, dataset)  # model_nusvc, model_lda, model_knn, model_rdmForest, model_gradBoost, model_lda, dataset)
+        resultats = train_test(model_svc, dataset)  # model_svc, model_nusvc, model_lda, model_knn, model_rdmForest, model_gradBoost, model_lda, dataset)
         processResult(resultats)
